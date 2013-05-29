@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta xmlns="http://exist-db.org/xquery/repo" xmlns:repo="http://exist-db.org/xquery/repo">
+    <author>Adam Retter</author>
+    <author>Dan McCreary</author>
+    <author>Dulip Withanage</author>
+    <author>Jens Østergaard Petersen</author>
+    <author>Wolfgang Meier</author>
+    <website>http://exist-db.org</website>
+    <license>GNU-LGPL</license>
+    <copyright>true</copyright>
+    <description>Shared Resources for cluster applications</description>
+    <type>application</type>
+    <target>cluster-shared</target>
+    <permissions user="admin" group="biblio.users" mode="0777"/>
+    <status>stable</status>
+</meta>
