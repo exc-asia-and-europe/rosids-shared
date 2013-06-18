@@ -56,5 +56,10 @@
             <value>trl</value>
             <labelSecondary>translated by</labelSecondary>
         </item>
+        <item>
+            <label>tester</label>
+            <value>tst</value>
+            <labelSecondary>MatzTest</labelSecondary>
+        </item>
     </items>
 </code-table>
