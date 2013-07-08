@@ -31,12 +31,28 @@
             <labelSecondary>compiled by</labelSecondary>
         </item>
         <item>
+            <label>collector</label>
+            <value>col</value>
+        </item>
+        <item>
+            <label>contributor</label>
+            <value>ctb</value>
+        </item>
+        <item>
             <label>creator</label>
             <value>cre</value>
         </item>
         <item>
+            <label>curator</label>
+            <value>cur</value>
+        </item>
+        <item>
             <label>depicted</label>
             <value>dpc</value>
+        </item>
+        <item>
+            <label>donor</label>
+            <value>dnr</value>
         </item>
         <item>
             <label>editor</label>
@@ -48,8 +64,32 @@
             <value>ill</value>
         </item>
         <item>
-            <label>photographer</label>
-            <value>pht</value>
+            <label>inscriber</label>
+            <value>ins</value>
+        </item>
+        <item>
+            <label>interviewee</label>
+            <value>ive</value>
+        </item>
+        <item>
+            <label>interviewer</label>
+            <value>ivr</value>
+        </item>
+        <item>
+            <label>manufacturer</label>
+            <value>mfr</value>
+        </item>
+        <item>
+            <label>musician</label>
+            <value>mus</value>
+        </item>
+        <item>
+            <label>interviewee</label>
+            <value>ive</value>
+        </item>
+        <item>
+            <label>owner</label>
+            <value>own</value>
         </item>
         <item>
             <label>reviewer</label>
@@ -59,11 +99,6 @@
             <label>translator</label>
             <value>trl</value>
             <labelSecondary>translated by</labelSecondary>
-        </item>
-        <item>
-            <label>tester</label>
-            <value>tst</value>
-            <labelSecondary>MatzTest</labelSecondary>
         </item>
     </items>
 </code-table>
