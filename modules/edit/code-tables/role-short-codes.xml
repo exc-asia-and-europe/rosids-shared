@@ -35,6 +35,10 @@
             <value>cre</value>
         </item>
         <item>
+            <label>depicted</label>
+            <value>dpc</value>
+        </item>
+        <item>
             <label>editor</label>
             <labelSecondary>edited by</labelSecondary>
             <value>edt</value>
