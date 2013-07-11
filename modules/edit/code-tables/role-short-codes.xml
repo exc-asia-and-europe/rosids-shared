@@ -84,12 +84,12 @@
             <value>mus</value>
         </item>
         <item>
-            <label>interviewee</label>
-            <value>ive</value>
-        </item>
-        <item>
             <label>owner</label>
             <value>own</value>
+        </item>
+        <item>
+            <label>photographer</label>
+            <value>pht</value>
         </item>
         <item>
             <label>reviewer</label>
