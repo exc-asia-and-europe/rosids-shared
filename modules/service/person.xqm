@@ -11,83 +11,52 @@ import module namespace ngram="http://exist-db.org/xquery/ngram";
 
 (: TEI namesspace :)
 declare namespace tei = "http://www.tei-c.org/ns/1.0";
+(: Getty namespace :)
+declare namespace vp = "http://localhost/namespace";
 
 (: Sample :)
-(:
-<person xml:id="uuid-f4ad4309-dff6-5ac0-9256-d65578112295">
-    <persName xml:lang="eng">
-        <forename>Zedong</forename>
-        <surname>Mao</surname>
-    </persName>
-    <persName xml:lang="eng" ref="https://kjc-fs1.kjc.uni-heidelberg.de/ULANService/api/get.xml/500322044" type="preferred">
-        <forename>Zedong</forename>
-        <surname>Mao</surname>
-    </persName>
-    <persName xml:lang="eng" ref="http://viaf.org/viaf/51699962">
-        <forename>Zedong</forename>
-        <surname>Mao</surname>
-    </persName>
-    <persName xml:lang="ger" ref="http://d-nb.info/gnd/118577425">
-        <forename>Zedong</forename>
-        <surname>Mao</surname>
-    </persName>
-    <persName xml:lang="chi">毛泽东</persName>
-    <persName xml:lang="ger">MaoTsetung</persName>
-    <persName xml:lang="ger">MaoTse-tung</persName>
-    <persName xml:lang="chi">毛澤東</persName>
-    <persName xml:lang="chi">Mao Zedong</persName>
-    <note>
-        <p>Heidicon-SW-ID of Mao, Zedong: 394</p>
-    </note>
-    <note type="type">person</note>
-</person>
-:)
-
-declare function person:createResults($query as xs:string, $results as item()*) {
-    (:
-    {
-    // Query is not required as of version 1.2.5
-    query: "Unit",
-    suggestions: [
-        { value: "United Arab Emirates", data: "AE" },
-        { value: "United Kingdom",       data: "UK" },
-        { value: "United States",        data: "US" }
-    ]
-}
-
-:)
-    
-    
-    <results>
-        <query>{$query}</query>
-        {
-            for $result in $results
+(: Mao Zedong (Chinese theorist, statesman, and poet, 1893-1976) :)
+declare function person:searchLocal($query as xs:string) {
+   let $results :=  collection("/resources/vocab/")//tei:listPerson/tei:person[ngram:contains(tei:persName, $query)]
+   return
+      for $result in $results
             let $persName := if (exists($result/tei:persName[@type eq "preferred"])) then ($result/tei:persName[@type eq "preferred"]) else ($result/tei:persName[1])
             return 
                 if (exists($persName/tei:forename) or exists($persName/tei:surname))
                 then (
                     let $person := $persName/tei:forename/text() || " " || $persName/tei:surname
                     return
-                        <suggestions value="{$person}" data="{$person}"/>
+                        <suggestions value="{$person}" data="{$person}" bio="" resource="local"/>
                 ) else (
                     let $person := $persName/text()
                     return
-                      <suggestions value="{$person}" data="{$person}"/>
-                )
+                      <suggestions value="{$person}" data="{$person}" bio="" resource="local"/>
+                ) 
+};
+
+declare function person:searchGetty($query as xs:string) {
+   let $results :=  collection("/resources/vocab/getty/ulan")//vp:Subject[ngram:contains(.//vp:Term_Text, $query)]
+   return
+      for $result in $results
+            let $persName := if (exists($result//vp:Preferred_Term)) then ($result//vp:Preferred_Term[1]/vp:Term_Text[1]/text()) else ($result//vp:Non-Preferred_Term[1]/vp:Term_Text[1]/text())
+            let $bio := if (exists($result//vp:Preferred_Biography)) then ($result//vp:Preferred_Biography[1]//vp:Biography_Text[1]) else ($result//vp:Non-Preferred_Biography[1]/vp:Biography_Text[1])
+            return 
+                <suggestions value="{$persName} ({$bio})" data="{$persName}" bio="{$bio}" resource="getty"/>
+                
+};
+
+declare function person:createResults($query as xs:string) {
+    <results>
+        <query>{$query}</query>
+        {
+            (person:searchLocal($query), person:searchGetty($query))
         }
-        <suggestions value="" data=""/>
+        <suggestions value="no result" data="no result"/>
     </results>
 };
 
 declare function person:lookup($query as xs:string) {
-    let $results :=  collection("/resources/vocab/")//tei:listPerson/tei:person[ngram:contains(tei:persName, $query)]
-    return
-    if ($results) then (person:createResults($query, $results)) else (
-        <results>
-            <query>{$query}</query>
-            <suggestions value="none" data="none"/>
-        </results>
-    )
+    person:createResults($query)
 };
 
 
