@@ -24,31 +24,32 @@ declare variable $security:user-metadata-file := "security.metadata.xml";
 declare function security:login($user as xs:string, $password as xs:string?) as xs:boolean
 {
     let $username := config:rewrite-username(
-        if($config:force-lower-case-usernames)then
+        if ($config:force-lower-case-usernames) then
             fn:lower-case($user)
         else
             $user
         )
-    return
-        (: authenticate against eXist-db :)
-        if(xmldb:login("/db", $username, $password))then
-        (
+        return
+            (: authenticate against eXist-db :)
+            if (xmldb:login("/db", $username, $password)) then
+            (
                 (: check if the users tamboti home collectin exists, if not create it (this will happen at the first login) :)
-            if(security:home-collection-exists($username))then
-            (
-                (: update the last login time:)
-                security:update-login-time($username),
-                true()
-            )
-            else
-            (
-                 let $users-collection-uri := security:create-home-collection($username) return
+                if (security:home-collection-exists($username)) then
+                (
+                    (: update the last login time:)
+                    security:update-login-time($username),    
                     true()
-            )
-            
-        ) else
-            (: authentication failed:)
-            false()
+                )
+                else
+                (
+                     let $users-collection-uri := security:create-home-collection($username) 
+                        return
+                           true()
+                )
+                
+            ) else
+                (: authentication failed:)
+                false()
 };
 
 (:~
@@ -60,14 +61,15 @@ declare function security:login($user as xs:string, $password as xs:string?) as 
 declare function security:store-user-credential-in-session($user as xs:string, $password as xs:string?) as empty()
 {
     let $username := config:rewrite-username(
-        if($config:force-lower-case-usernames)then
+        if ($config:force-lower-case-usernames) then
             fn:lower-case($user)
         else $user
-    ) return
-    (
-        session:set-attribute($security:SESSION_USER_ATTRIBUTE, $username),
-        session:set-attribute($security:SESSION_PASSWORD_ATTRIBUTE, $password)
-    )
+    ) 
+        return
+        (
+            session:set-attribute($security:SESSION_USER_ATTRIBUTE, $username),
+            session:set-attribute($security:SESSION_PASSWORD_ATTRIBUTE, $password)
+        )
 };
 
 (:~
@@ -78,14 +80,15 @@ declare function security:store-user-credential-in-session($user as xs:string, $
 :)
 declare function security:get-user-credential-from-session() as xs:string+
 {
-    let $user := session:get-attribute($security:SESSION_USER_ATTRIBUTE) return
-        if($user)then
-        (
-            $user,
-            session:get-attribute($security:SESSION_PASSWORD_ATTRIBUTE)
-        )
-        else
-            $security:GUEST_CREDENTIALS
+    let $user := session:get-attribute($security:SESSION_USER_ATTRIBUTE) 
+        return
+            if ($user) then
+            (
+                $user,
+                session:get-attribute($security:SESSION_PASSWORD_ATTRIBUTE)
+            )
+            else
+                $security:GUEST_CREDENTIALS
 };
 
 (:~
@@ -99,9 +102,16 @@ declare function security:get-email-address-for-user($username as xs:string) as 
     sm:get-account-metadata($username, xs:anyURI("http://axschema.org/contact/email"))
 };
 
-declare function security:get-human-name-for-user($username as xs:string) as xs:string?
+declare function security:get-human-name-for-user($username as xs:string)
+as xs:string?
 {
-    sm:get-account-metadata($username, xs:anyURI("http://axschema.org/namePerson"))
+    let $first := sm:get-account-metadata($username, xs:anyURI("http://axschema.org/namePerson/first"))
+        return
+            if ($first) 
+            then
+                concat($first, " ", sm:get-account-metadata($username, xs:anyURI("http://axschema.org/namePerson/last")))
+            else
+                $username
 };
 
 (:~
@@ -111,8 +121,9 @@ declare function security:get-human-name-for-user($username as xs:string) as xs:
 :)
 declare function security:home-collection-exists($user as xs:string) as xs:boolean
 {
-    let $username := if($config:force-lower-case-usernames)then(fn:lower-case($user))else($user) return
-        xmldb:collection-available(security:get-home-collection-uri($username))
+    let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) 
+        return
+            xmldb:collection-available(security:get-home-collection-uri($username))
 };
 
 (:~
@@ -120,8 +131,9 @@ declare function security:home-collection-exists($user as xs:string) as xs:boole
 :)
 declare function security:get-home-collection-uri($user as xs:string) as xs:string
 {
-    let $username := if($config:force-lower-case-usernames)then(fn:lower-case($user))else($user) return
-        fn:concat($config:users-collection, "/", $username)
+    let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) 
+        return
+            fn:concat($config:users-collection, "/", $username)
 };
 
 (:~
@@ -131,11 +143,11 @@ declare function security:get-home-collection-uri($user as xs:string) as xs:stri
 :)
 declare function security:create-home-collection($user as xs:string) as xs:string?
 {
-    let $username := if($config:force-lower-case-usernames)then(fn:lower-case($user))else($user) return
-        if(xmldb:collection-available($config:users-collection))then
+    let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) return
+        if (xmldb:collection-available($config:users-collection)) then
         (
             let $collection-uri := xmldb:create-collection($config:users-collection, $username) return
-                if($collection-uri) then
+                if ($collection-uri) then
                 (
                     (:
                     TODO do we need the group 'read' to allow sub-collections to be enumerated?
@@ -151,7 +163,7 @@ declare function security:create-home-collection($user as xs:string) as xs:strin
                 ) else (
                     $collection-uri
                 )
-        )else()
+        ) else ()
 };
 
 (:~
@@ -164,9 +176,11 @@ declare function security:create-user-metadata($user-collection-uri as xs:string
              <security:last-login-time>{$login-time}</security:last-login-time>
              <security:login-time>{$login-time}</security:login-time>
          </security:metadata>
-        ) return
-            let $null := sm:chmod($metadata-doc-uri, "rwx------") return
-                $metadata-doc-uri
+        ) 
+        return
+            let $null := sm:chmod($metadata-doc-uri, "rwx------") 
+                return
+                    $metadata-doc-uri
 };
 
 (:~
@@ -174,7 +188,8 @@ declare function security:create-user-metadata($user-collection-uri as xs:string
 :)
 declare function security:update-login-time($user as xs:string) as empty() {
     let $user-home-collection := security:get-home-collection-uri($user),
-    $security-metadata := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file)) return
+    $security-metadata := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file)) 
+    return
         (
             update value $security-metadata/security:metadata/security:last-login-time with string($security-metadata/security:metadata/security:login-time),
             update value $security-metadata/security:metadata/security:login-time with util:system-dateTime()
@@ -185,15 +200,16 @@ declare function security:update-login-time($user as xs:string) as empty() {
 : Get the last login time of a user
 :)
 declare function security:get-last-login-time($user as xs:string) as xs:dateTime {
-    let $user-home-collection := security:get-home-collection-uri($user) return
-        let $last-login := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file))/security:metadata/security:last-login-time return
-        if(exists($last-login))then
-            $last-login
+    let $user-home-collection := security:get-home-collection-uri($user) 
+        return
+            let $last-login := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file))/security:metadata/security:last-login-time return
+            if (exists($last-login)) then
+                $last-login
             else
                 (
                     util:log("WARN", fn:concat("Could not find the last-login time for the user '", $user,"'. Does the user's metadata exist?")),
-            util:system-dateTime()
-        )
+                    util:system-dateTime()
+                )
 };
 
 (:~
@@ -237,7 +253,7 @@ declare function security:can-execute-collection($collection as xs:string) as xs
 :)
 declare function security:is-collection-owner($user as xs:string, $collection as xs:string) as xs:boolean
 {
-    let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user)
+    let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) 
         return
             if (xmldb:collection-available($collection)) then
                 let $owner := xmldb:get-owner($collection) return
@@ -258,30 +274,30 @@ declare function security:get-group-members($group as xs:string) as xs:string*
 };
 
 declare function security:set-resource-permissions($resource as xs:string, $owner as xs:string, $group as xs:string, $owner-read as xs:boolean, $owner-write as xs:boolean, $group-read as xs:boolean, $group-write as xs:boolean, $other-read as xs:boolean, $other-write as xs:boolean) as empty() {
-
-    let $owner-username := if ($config:force-lower-case-usernames) then (fn:lower-case($owner)) else ($owner)
+    
+    let $owner-username := if ($config:force-lower-case-usernames) then (fn:lower-case($owner)) else ($owner) 
         return
             let $permissions := fn:concat(
                 if ($owner-read) then ("r") else ("-"),
                 if ($owner-write) then ("w") else ("-"),
                 if ($owner-write) then ("x") else ("-"),
-
+                
                 if ($group-read) then ("r") else ("-"),
                 if ($group-write) then ("w") else ("-"),
                 if ($group-write) then ("x") else ("-"),
-
+                
                 if ($other-read) then ("r") else ("-"),
                 if ($other-write) then ("w") else ("-"),
                 if ($other-write) then ("x") else ("-")
         ) return
             let $collection-uri := fn:replace($resource, "(.*)/.*", "$1"),
-            $resource-uri := fn:replace($resource, ".*/", "")
+            $resource-uri := fn:replace($resource, ".*/", "") 
                 return
                     xmldb:set-resource-permissions(
-                        $collection-uri,
-                        $resource-uri,
-                        $owner-username,
-                        $group,
+                        $collection-uri, 
+                        $resource-uri, 
+                        $owner-username, 
+                        $group, 
                         xmldb:string-to-permissions($permissions))
 };
 
@@ -291,16 +307,16 @@ declare function security:set-ace-writeable($resource as xs:anyURI, $id as xs:in
             if (empty($ace)) then
                 false()
             else (
-
+                
                 let $regexp-replacement := if ($is-writeable) then
-                    "w"
+                    "w"    
                 else
                     "-"
                 ,
                 $new-mode := fn:replace($ace/@mode, "(.).(.)", fn:concat("$1", $regexp-replacement, "$2")),
                 $null := sm:modify-ace($resource, $id, $ace/@access_type eq 'ALLOWED', $new-mode) return
                     true()
-
+                
             )
 };
 
@@ -309,28 +325,28 @@ declare function security:set-ace-writeable($resource as xs:anyURI, $id as xs:in
 :   The sequence contains USER or GROUP as the first item, and then the who as the second item
 :)
 declare function security:remove-ace($resource as xs:anyURI, $id as xs:int) as xs:string* {
-
-    let $permissions :=
+    
+    let $permissions := 
         sm:get-permissions($resource),
-        $ace := $permissions/sm:permission/sm:acl/sm:ace[xs:int(@index) eq $id]
+        $ace := $permissions/sm:permission/sm:acl/sm:ace[xs:int(@index) eq $id] 
             return
-                if (empty($ace)) then (
-                    ()
-                ) else (
-                    let $null := sm:remove-ace($resource, $id) return
+                if (exists($ace)) then (
+                  let $null := sm:remove-ace($resource, $id) return
                         ($ace/@target, $ace/@who)
+                ) else (
+                    ()
                 )
 };
 
 (: adds a group ace and returns its index:)
 declare function security:add-group-ace($resource as xs:anyURI, $groupname as xs:string, $mode as xs:string) as xs:int? {
     sm:add-group-ace($resource, $groupname, true(), $mode),
-
-    xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries) - 1
+    
+    xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries) - 1 
 };
 
 declare function security:insert-group-ace($resource as xs:anyURI, $id as xs:int, $groupname as xs:string, $mode as xs:string) as xs:boolean {
-
+    
     (: if the ace index is one past the end of the acl, then we actually want an append :)
     if ($id eq xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries)) then
         fn:not(fn:empty(security:add-group-ace($resource, $groupname, $mode)))
@@ -344,12 +360,12 @@ declare function security:insert-group-ace($resource as xs:anyURI, $id as xs:int
 (: adds a user ace and returns its index:)
 declare function security:add-user-ace($resource as xs:anyURI, $username as xs:string, $mode as xs:string) as xs:int? {
     sm:add-user-ace($resource, $username, true(), $mode),
-
-    xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries) - 1
+    
+    xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries) - 1 
 };
 
 declare function security:insert-user-ace($resource as xs:anyURI, $id as xs:int, $username as xs:string, $mode as xs:string) as xs:boolean {
-
+    
     (: if the ace index is one past the end of the acl, then we actually want an append:)
     if ($id eq xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries)) then
         fn:not(fn:empty(security:add-user-ace($resource, $username, $mode)))
@@ -366,10 +382,10 @@ declare function security:insert-user-ace($resource as xs:anyURI, $id as xs:int,
 : the owner of the parent collection
 :)
 declare function security:grant-parent-owner-access-if-foreign-collection($collection as xs:string) as empty() {
-
+    
     let $collection-owner := sm:get-permissions($collection)/sm:permission/@owner,
     $parent-collection := fn:replace($collection, "(.*)/.*", "$1"),
-    $parent-collection-owner := sm:get-permissions(xs:anyURI($parent-collection))/sm:permission/@owner
+    $parent-collection-owner := sm:get-permissions(xs:anyURI($parent-collection))/sm:permission/@owner 
         return
             if (string($collection-owner) ne string($parent-collection-owner)) then
                 sm:add-user-ace(xs:anyURI($collection), $parent-collection-owner, true(), "rwx")
@@ -386,23 +402,23 @@ declare function security:apply-parent-collection-permissions($resource as xs:an
 	$this-last-acl-index := xs:int($this-permissions/sm:permission/sm:acl/@entries) -1 return
 
         (
-            for $ace in $parent-permissions/sm:permission/sm:acl/sm:ace
-                return
+            for $ace in $parent-permissions/sm:permission/sm:acl/sm:ace 
+                return             
     				if ($ace/@target eq "USER") then
                         sm:add-user-ace($resource, $ace/@who, $ace/@access_type eq "ALLOWED", $ace/@mode)
-                    else
+                    else 
                         if ($ace/@target eq "GROUP") then
                         sm:add-group-ace($resource, $ace/@who, $ace/@access_type eq "ALLOWED", $ace/@mode)
                         else ()
 			,
             if ($this-permissions/sm:permission/@owner ne $parent-permissions/sm:permission/@owner) then
-                let $owner-mode := fn:replace($parent-permissions/sm:permission/@mode, "(...).*", "$1")
+                let $owner-mode := fn:replace($parent-permissions/sm:permission/@mode, "(...).*", "$1") 
                     return
                         sm:add-user-ace($resource, $parent-permissions/sm:permission/@owner, true(), $owner-mode)
             else ()
     		,
             if ($this-permissions/sm:permission/@group ne $parent-permissions/sm:permission/@group) then
-                let $group-mode := fn:replace($parent-permissions/sm:permission/@mode, "...(...)...", "$1")
+                let $group-mode := fn:replace($parent-permissions/sm:permission/@mode, "...(...)...", "$1") 
                     return
                         sm:add-group-ace($resource, $parent-permissions/sm:permission/@group, true(), $group-mode)
             else ()
@@ -429,16 +445,16 @@ declare function security:is-biblio-user($username as xs:string) as xs:boolean {
 (:
 declare function security:group-can-read-collection($group as xs:string, $collection as xs:string) as xs:boolean
 {
-    if(xmldb:collection-available($collection))then
+    if (xmldb:collection-available($collection)) then
     
         let $permissions := sm:get-permissions($collection) return
         
             (: check the group owner :)
-            if($permissions/@group eq $group and (fn:matches($permissions/@mode, "...r.....", "") or fn:matches($permissions/@mode, "......r..")))then
+            if ($permissions/@group eq $group and (fn:matches($permissions/@mode, "...r.....", "") or fn:matches($permissions/@mode, "......r.."))) then
                 true()
             else
                 (: check the acl :)
-                if($permissions/sm:permission/sm:acl/sm:ace[@target eq "GROUP"][@who eq $group][@access_type eq "ALLOWED"][fn:contains(@mode, "r")])then
+                if ($permissions/sm:permission/sm:acl/sm:ace[@target eq "GROUP"][@who eq $group][@access_type eq "ALLOWED"][fn:contains(@mode, "r")]) then
                     true()
                 else
                     false()
@@ -454,16 +470,16 @@ declare function security:group-can-read-collection($group as xs:string, $collec
 :)
 declare function security:group-can-write-collection($group as xs:string, $collection as xs:string) as xs:boolean
 {
-    if(xmldb:collection-available($collection))then
+    if (xmldb:collection-available($collection)) then
     
         let $permissions := sm:get-permissions($collection) return
         
             (: check the group owner :)
-            if($permissions/@group eq $group and (fn:matches($permissions/@mode, "....w....", "") or fn:matches($permissions/@mode, ".......w.")))then
+            if ($permissions/@group eq $group and (fn:matches($permissions/@mode, "....w....", "") or fn:matches($permissions/@mode, ".......w."))) then
                 true()
             else
                 (: check the acl :)
-                if($permissions/sm:permission/sm:acl/sm:ace[@target eq "GROUP"][@who eq $group][@access_type eq "ALLOWED"][fn:contains(@mode, "w")])then
+                if ($permissions/sm:permission/sm:acl/sm:ace[@target eq "GROUP"][@who eq $group][@access_type eq "ALLOWED"][fn:contains(@mode, "w")]) then
                     true()
                 else
                     false()
@@ -478,7 +494,7 @@ declare function security:group-can-write-collection($group as xs:string, $colle
 :)
 declare function security:other-can-read-collection($collection as xs:string) as xs:boolean
 {
-    if(xmldb:collection-available($collection))then
+    if (xmldb:collection-available($collection)) then
         let $permissions := sm:get-permissions($collection) return
             fn:matches($permissions/@mode, "......r..")
     else
@@ -492,7 +508,7 @@ declare function security:other-can-read-collection($collection as xs:string) as
 :)
 declare function security:other-can-write-collection($collection as xs:string) as xs:boolean
 {
-    if(xmldb:collection-available($collection))then
+    if (xmldb:collection-available($collection)) then
         let $permissions := sm:get-permissions($collection) return
             fn:matches($permissions/@mode, ".......w.")
     else
@@ -524,10 +540,10 @@ declare function security:get-other-biblio-users() as xs:string*
 
 declare function security:get-group($collection as xs:string) as xs:string?
 {
-    if(xmldb:collection-available($collection))then
+    if (xmldb:collection-available($collection)) then
     (
         xmldb:get-group($collection)
-    ) else()
+    ) else ()
 };
 :)
 
@@ -535,7 +551,7 @@ declare function security:get-group($collection as xs:string) as xs:string?
 declare function security:set-other-can-read-collection($collection, $read as xs:boolean) as xs:boolean
 {
     let $permissions := xmldb:permissions-to-string(xmldb:get-permissions($collection)) return
-        let $new-permissions := if($read)then(
+        let $new-permissions := if ($read) then (
             fn:replace($permissions, "(......)(.)(..)", "$1r$3")
         ) else (
            fn:replace($permissions, "(......)(.)(..)", "$1-$3")
@@ -549,7 +565,7 @@ declare function security:set-other-can-read-collection($collection, $read as xs
 declare function security:set-other-can-write-collection($collection, $write as xs:boolean) as xs:boolean
 {
     let $permissions := xmldb:permissions-to-string(xmldb:get-permissions($collection)) return
-        let $new-permissions := if($write)then(
+        let $new-permissions := if ($write) then (
             fn:replace($permissions, "(.......)(.)(.)", "$1w$3")
         ) else (
            fn:replace($permissions, "(.......)(.)(.)", "$1-$3")
@@ -573,7 +589,7 @@ declare function security:set-group-can-write-collection($collection, $write as 
 declare function security:set-group-can-read-collection($collection, $group as xs:string, $read as xs:boolean) as xs:boolean
 {
     let $permissions := xmldb:permissions-to-string(xmldb:get-permissions($collection)) return
-        let $new-permissions := if($read)then(
+        let $new-permissions := if ($read) then (
             fn:replace($permissions, "(...)(.)(.....)", "$1r$3")
         ) else (
            fn:replace($permissions, "(...)(.)(.....)", "$1-$3")
@@ -586,7 +602,7 @@ declare function security:set-group-can-read-collection($collection, $group as x
 declare function security:set-group-can-write-collection($collection, $group as xs:string, $write as xs:boolean) as xs:boolean
 {
     let $permissions := xmldb:permissions-to-string(xmldb:get-permissions($collection)) return
-        let $new-permissions := if($write)then(
+        let $new-permissions := if ($write) then (
             fn:replace($permissions, "(....)(.)(....)", "$1w$3")
         ) else (
            fn:replace($permissions, "(....)(.)(....)", "$1-$3")
@@ -606,12 +622,12 @@ declare function security:set-group-can-write-collection($collection, $group as 
 declare function security:create-group($group-name as xs:string, $group-members as xs:string*) as xs:boolean
 {       
     (: create the group, currently logged in user will be the groups manager :)
-    if(xmldb:create-group($group-name, security:get-user-credential-from-session()[1]))then
+    if (xmldb:create-group($group-name, security:get-user-credential-from-session()[1])) then
     (
         (: add members to group :)
         let $add-results :=
             for $group-member in $group-members            
-            let $group-member-username := if($config:force-lower-case-usernames)then(fn:lower-case($group-member))else($group-member) return
+            let $group-member-username := if ($config:force-lower-case-usernames) then (fn:lower-case($group-member)) else ($group-member) return
                 xmldb:add-user-to-group($group-member-username, $group-name)
         return
             fn:not(fn:contains($add-results, false()))
@@ -641,7 +657,7 @@ declare function security:set-group-can-read-resource($group-name as xs:string, 
     let $collection-uri := fn:replace($resource, "(.*)/.*", "$1"),
     $resource-uri := fn:replace($resource, ".*/", ""),
     $permissions := xmldb:permissions-to-string(xmldb:get-permissions($collection-uri, $resource-uri)) return
-        let $new-permissions := if($read)then(
+        let $new-permissions := if ($read) then (
             fn:replace($permissions, "(...)(.)(.....)", "$1r$3")
         ) else (
            fn:replace($permissions, "(...)(.)(.....)", "$1-$3")
@@ -661,7 +677,7 @@ declare function security:get-groups($user as xs:string) as xs:string*
     :)
     let $null := util:log("debug", fn:concat("USER=========", $user)) return
     
-    let $username := if($config:force-lower-case-usernames)then(fn:lower-case($user))else($user) return
+    let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) return
         xmldb:get-user-groups($username)
 };
 :)
@@ -672,9 +688,9 @@ declare function security:find-collections-with-group($collection-path as xs:str
 	for $child-collection in xmldb:get-child-collections($collection-path)
 	let $child-collection-path := fn:concat($collection-path, "/", $child-collection) return
 		(
-			if(xmldb:get-group($child-collection-path) eq $group)then(
+			if (xmldb:get-group($child-collection-path) eq $group) then (
 				$child-collection-path
-			)else(),
+			) else (),
 			security:find-collections-with-group($child-collection-path, $group)
 		)
 };
