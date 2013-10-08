@@ -22,9 +22,15 @@
             <value>aui</value>
             <labelSecondary>with an introduction by</labelSecondary>
         </item>
+	 <item>
+            <label>collaborator</label>
+            <value>clb</value>
+            <labelSecondary>with the collaboration of</labelSecondary>
+        </item>
         <item>
             <label>commentator for written text</label>
             <value>cwt</value>
+	    <labelSecondary>commentary by</labelSecondary>
         </item>
         <item>
             <label>composer</label>
@@ -69,12 +75,13 @@
         </item>
         <item>
             <label>editor</label>
-            <labelSecondary>edited by</labelSecondary>
             <value>edt</value>
+	    <labelSecondary>edited by</labelSecondary>
         </item>
         <item>
             <label>illustrator</label>
             <value>ill</value>
+	    <labelSecondary>illustrated by</labelSecondary>
         </item>
         <item>
             <label>inscriber</label>
@@ -103,10 +110,16 @@
         <item>
             <label>photographer</label>
             <value>pht</value>
+	    <labelSecondary>photography by</labelSecondary>
+        </item>
+	 <item>
+            <label>reporter</label>
+            <value>rpt</value>
         </item>
         <item>
             <label>reviewer</label>
             <value>rev</value>
+	    <labelSecondary>reviewed by</labelSecondary>
         </item>
 	 <item>
             <label>thesis advisor</label>
