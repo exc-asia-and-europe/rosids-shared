@@ -43,6 +43,7 @@ declare variable $config:theme-config := concat($config:themes, "/configuration.
 
 declare variable $config:resources := concat($config:app-root, "/resources");
 declare variable $config:images := concat($config:app-root, "/resources/images");
+declare variable $config:image-service-url := "http://kjc-sv016.kjc.uni-heidelberg.de/images/service/download_uuid/";
 
 (: If the user has not specified a query, should he see the entire collection contents?
  : Set to true() if a query must be specified, false() to list the entire collection.
@@ -76,7 +77,7 @@ declare function config:rewrite-username($username as xs:string) as xs:string {
         $username
     return
     
-        if(fn:ends-with(fn:lower-case($username), fn:concat("@", $config:enforced-realm-id)) or fn:lower-case($username) = ("admin", "editor", "guest")) then
+        if(fn:ends-with(fn:lower-case($username), fn:concat("@", $config:enforced-realm-id)) or fn:lower-case($username) = ("admin", "editor", "guest","testuser1","testuser2","testuser3")) then
             $username
         else
             fn:concat($username, "@", $config:enforced-realm-id)

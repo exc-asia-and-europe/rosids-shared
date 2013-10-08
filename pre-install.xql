@@ -13,7 +13,6 @@ declare variable $target external;
 
 declare variable $db-root := "/db";
 declare  variable $data-dir := "resources/";
-declare  variable $vocab-dir := $data-dir || "vocab/";
 
 declare variable $log-level := "INFO";
 
@@ -54,14 +53,6 @@ declare function local:mkcol($collection, $path) {
 
 
 util:log($log-level, "Script: Running pre-install script ..."),
-util:log($log-level, "DIR: " || $dir),
-
-local:mkcol($db-root, $vocab-dir),
-xmldb:store-files-from-pattern( $vocab-dir, $dir, "data/vocab/*.xml"),
-local:set-collection-resource-permissions($db-root || "/" ||   $vocab-dir, $biblio-admin-user, $biblio-users-group, util:base-to-integer(0755, 8)),
-
-
-local:mkcol("/db/system/config/db", $vocab-dir),
-xmldb:store-files-from-pattern(concat("/system/config/db/",$vocab-dir), $dir, "data/vocab/*.xconf") ,
+(: Add needed pre-install-scripts here :)
 
 util:log($log-level, "...DONE")

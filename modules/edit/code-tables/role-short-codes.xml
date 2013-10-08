@@ -17,6 +17,11 @@
             <label>author</label>
             <value>aut</value>
         </item>
+	<item>
+            <label>author of introduction, etc.</label>
+            <value>aui</value>
+            <labelSecondary>with an introduction by</labelSecondary>
+        </item>
         <item>
             <label>commentator for written text</label>
             <value>cwt</value>
@@ -29,6 +34,14 @@
             <label>compiler</label>
             <value>com</value>
             <labelSecondary>compiled by</labelSecondary>
+        </item>
+	<item>
+            <label>composer</label>
+            <value>cmp</value>
+        </item>
+        <item>
+            <label>correspondent</label>
+            <value>crp</value>
         </item>
         <item>
             <label>collector</label>
@@ -94,6 +107,11 @@
         <item>
             <label>reviewer</label>
             <value>rev</value>
+        </item>
+	 <item>
+            <label>thesis advisor</label>
+            <value>ths</value>
+            <labelSecondary>thesis advisor</labelSecondary>
         </item>
         <item>
             <label>translator</label>

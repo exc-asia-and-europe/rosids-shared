@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="xar" name="cluster-shared">
-    <property name="project.version" value="1.0.6.2"/>
+    <property name="project.version" value="1.0.9"/>
     <property name="project.app" value="cluster-shared"/>
     <property name="build.dir" value="build"/>
     <target name="xar">
