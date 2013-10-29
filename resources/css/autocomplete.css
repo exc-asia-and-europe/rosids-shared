@@ -38,7 +38,8 @@
   color: #999
 }
 
-.tt-dropdown-menu {
+.bf .tt-dropdown-menu {
+  position: relative;        
   width: 422px;
   margin-top: 12px;
   padding: 8px 0;
@@ -54,9 +55,12 @@
 }
 
 .tt-suggestion {
-  padding: 3px 20px;
+  padding: 6px 6px;
+  height: 18px;
+  /*
   font-size: 18px;
   line-height: 24px;
+  */
 }
 
 .tt-suggestion.tt-is-under-cursor {
@@ -65,44 +69,93 @@
 
 }
 
-.tt-suggestion p {
-  margin: 0;
-}
 .th_resources {
     display: block;
-    height: 24px;
-    width: 24px;   
-    margin-right: 3px;
+    height: 16px;
+    width: 16px;   
+    padding: 0 1px;
     float: left;
 }
-.th_sources span {
-    display: block;
+.th_text_wrapper {
+    float: left;
     height: 16px;
-    width: 16px;    
 }
-.img_local {
-    background-image: url("/exist/apps/cluster-shared/resources/images/local.png");
-    background-repeat: 'no-repeat';
-    background-position: 'top center';
+.th_value {
+    float: left;
+    font-size: 1.2em;
+    margin-left: 10px;
+    display: inline-block;
 }
-
-.img_tgn,
-.img_ulan,
-.img_getty {
-    background-image: url("/exist/apps/cluster-shared/resources/images/JPG.png");
-    background-repeat: 'no-repeat';
-    background-position: 'top center';
-}
-
-.img_viaf {
-    background-image: url("/exist/apps/cluster-shared/resources/images/viaf.png");  
-    background-repeat: 'no-repeat';
-    background-position: 'top center';
+.th_bio {
+    font-size: 0.8em;
+    font-style: italic;
+    text-align: right;
+    display: inline-block;
+    padding-left: 4px;
 }
 
-.img_DNB {
-    background-image: url("/exist/apps/cluster-shared/resources/images/DNB.png");
-    background-repeat: 'no-repeat';
-    background-position: 'top center';
+.th_sources {
+    padding-left: 5px;
+    float: right;
+    display: inline-block;
+}
+
+.th_sources span {
+    float: left;
+    display: inline-block;
+    height: 0;
+    width: 0;
+    padding: 0;
+    margin: 0;   
+}
+.th_resources .img_local,
+.th_sources .img_local {
+    height: 16px;
+    width: 16px;
+    margin: 1px;  
+    display: block;
+    background: url("/exist/apps/cluster-shared/resources/images/local.png") no-repeat center;
+}
+
+.th_resources .img_aat,
+.th_resources .img_tgn,
+.th_resources .img_ulan,
+.th_resources .img_JPG,
+.th_sources .img_aat,
+.th_sources .img_tgn,
+.th_sources .img_ulan,
+.th_sources .img_JPG {
+    height: 16px;
+    width: 16px;
+    margin: 1px;  
+    display: block;
+    background: url("/exist/apps/cluster-shared/resources/images/JPG.png") no-repeat center;
+}
+
+.th_resources .img_viaf,
+.th_sources .img_viaf {
+    height: 16px;
+    width: 16px;
+    margin: 1px;  
+    display: block;
+    background: url("/exist/apps/cluster-shared/resources/images/viaf.png") no-repeat center;
+}
+
+.th_resources .img_DNB,
+.th_sources .img_DNB {
+    height: 16px;
+    width: 16px;
+    margin: 1px;  
+    display: block;
+    background: url("/exist/apps/cluster-shared/resources/images/DNB.png") no-repeat center;
+}
+
+.th_hint {
+    float: right;
+    height: 16px;
+    width: 16px;
+    margin: 1px;  
+    display: inline-block;
+    background: url("/exist/apps/cluster-shared/resources/images/hint.png") no-repeat center;
 }
 
