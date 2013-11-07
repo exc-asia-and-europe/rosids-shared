@@ -46,9 +46,6 @@ function initAutocompletes() {
             minLength: 3,
             limit: 20,
             template: '<div class="th_wrapper">'
-                        + '<div class="th_resources">'
-                        +   '<span class="img_{{resource}}"></span>'
-                        + '</div>'
                         + '<div class="th_text_wrapper">'
                         +   '<div class="th_value" title="{{type}}">{{value}}</div>'
                         +   '{{#bio}}<div class="th_bio">{{/bio}}{{bio}}{{#bio}}</div>{{/bio}}'
@@ -56,6 +53,9 @@ function initAutocompletes() {
                         + '</div>'
                         + '<div class="th_sources">'
                         +   '{{#sources}}<span class="img_{{.}}"></span>{{/sources}}'
+                        + '</div>'
+                        + '<div class="th_resources">'
+                        +   '<span class="img_{{resource}}"></span>'
                         + '</div>'
                     + '</div>',
             engine: Hogan,
@@ -127,13 +127,13 @@ function initAutocompletes() {
             fluxProcessor.sendValue("" + id, datum.name);
             
             if(target.attr('queryType') === 'names') {
-                console.log("Names query.")
-                if(datum.bio != null) {
+                console.log("Names query.");
+                if(datum.bio !== null) {
                    console.log("Name BIO:", datum.bio);
                    console.log("Name earliestDate:", datum.earliestDate);
                    console.log("Name latestDate:", datum.latestDate);
                    
-                   if(datum.earliestDate != null) {
+                   if(datum.earliestDate !== null) {
                        var earliestDateW = $('#' + jObject.attr('callbackSet') + ' .xfRepeatIndex input[placeholder=EarliestDate]');
                        console.log("Name earliestDate:", earliestDateW);
                        earliestDateW.val(datum.earliestDate);
@@ -143,7 +143,7 @@ function initAutocompletes() {
                        fluxProcessor.sendValue("" + id, datum.earliestDate);
                    }
                    
-                   if(datum.latestDate != null) {
+                   if(datum.latestDate !== null) {
                        var latestDateW = $('#' + jObject.attr('callbackSet') + ' .xfRepeatIndex input[placeholder=LatestDate]');
                        console.log("Name earliestDate:", latestDateW);
                        latestDateW.val(datum.latestDate);
