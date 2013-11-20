@@ -155,22 +155,27 @@ function initAutocompletes() {
                         }
                     } else {
                         var bio = null;
-                        if (parsedData.bio !== null) {
-                            bio = parsedData.bio;
+                        if (parsedData.result.bio !== null) {
+                            bio = parsedData.result.bio;
                         }
+                        var sources = [];
+                        if(parsedData.result.sources !== null) {
+                            sources = parsedData.result.sources.split(/\b\s+/);
+                        }
+                        
 
                         dataset.push({
-                            name: parsedData.name,
-                            value: parsedData.value,
-                            internalID: parsedData.internalID,
+                            name: parsedData.result.name,
+                            value: parsedData.result.value,
+                            internalID: parsedData.result.internalID,
                             bio: bio,
-                            earliestDate: parsedData.earliestDate,
-                            latestDate: parsedData.latestDate,
-                            uuid: parsedData.uuid,
-                            resource: parsedData.resource,
-                            type: parsedData.type,
-                            sources: parsedData.sources.split(/\b\s+/),
-                            hint: parsedData.hint
+                            earliestDate: parsedData.result.earliestDate,
+                            latestDate: parsedData.result.latestDate,
+                            uuid: parsedData.result.uuid,
+                            resource: parsedData.result.resource,
+                            type: parsedData.result.type,
+                            sources: sources,
+                            hint: parsedData.result.hint
                         });
                     }
                     return dataset;
