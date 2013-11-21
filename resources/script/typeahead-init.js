@@ -68,12 +68,14 @@ function initAutocompletes() {
 
     $(".xfRepeatItem [class$=-autocomplete-input]").each(function() {
         var jObject = $(this);
-        var xfValue = jObject.parent('.xfContainer').find('.' + jObject.attr('name') + ' .xfValue');
-        //$('#' + jObject.attr('callbackSet') + ' .xfRepeatItem .' + jObject.attr('name') + ' .xfValue');
-
-        //console.log('#' + jObject.attr('callbackSet') + ' .xfRepeatItem .' + jObject.attr('name') + ' .xfValue')
-        console.log("parent: ", jObject.parent('.xfContainer'));
-        console.log("xfValue: ", xfValue, " Value: ", xfValue.val());
+        var parent = jObject.parent('.xfContainer');
+        if(parent.length === 0) {
+            parent = jObject.parent('.xfRepeatItem');
+        }
+        //console.log("parent: ", parent);
+        
+        var xfValue = parent.find('.' + jObject.attr('name') + ' .xfValue');
+        //console.log("xfValue: ", xfValue, " Value: ", xfValue.val());
 
         //Set input ot xforms value
         jObject.val(xfValue.val());
@@ -83,7 +85,7 @@ function initAutocompletes() {
         var host = jObject.attr("host");
 
 
-        console.log("Name: ", name, " queryType: ", queryType, ' HOST:', host);
+        //console.log("Name: ", name, " queryType: ", queryType, ' HOST:', host);
         /*
          <result>
          <name>Not found</name>
