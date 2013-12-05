@@ -1,62 +1,5 @@
 var autocompletes = [];
 
-function handlePerson(jqueryObject, datum) {
-
-    //Handle type
-    //Set value if present else to empty string
-    var type = "";
-    if (datum.type !== null) {
-        type = datum.type;
-    }
-
-    var typeSelect = $('#' + jqueryObject.attr('callbackSet') + ' .xfRepeatIndex .nameType select');
-    //Chek if we found the control
-    if (typeSelect.length) {
-        typeSelect.val(type);
-        var id = typeSelect.attr('id');
-        id = id.substring(0, id.indexOf('-value'));
-        fluxProcessor.sendValue("" + id, type);
-    }
-
-    //Handle earliestDate
-    //Set value if present else to empty string
-    var earliestDate = "";
-    if (datum.earliestDate !== null) {
-        earliestDate = datum.earliestDate;
-        console.log("Name earliestDate:", earliestDate);
-    }
-
-    var earliestDateW = $('#' + jqueryObject.attr('callbackSet') + ' .xfRepeatIndex input[placeholder=EarliestDate]');
-    //Chek if we found the control
-    if (earliestDateW.length) {
-        console.log("Name earliestDate:", earliestDateW);
-        earliestDateW.val(earliestDate);
-        var id = earliestDateW.attr('id');
-        id = id.substring(0, id.indexOf('-value'));
-        console.log("ID: ", id);
-        fluxProcessor.sendValue("" + id, earliestDate);
-    }
-
-    //Handle latestDate
-    //Set value if present else to empty string
-    var latestDate = "";
-    if (datum.latestDate !== null) {
-        latestDate = datum.latestDate;
-        console.log("Name latestDate:", latestDate);
-    }
-
-    var latestDateW = $('#' + jqueryObject.attr('callbackSet') + ' .xfRepeatIndex input[placeholder=LatestDate]');
-    //Chek if we found the control
-    if (latestDateW.length) {
-        console.log("Name LatestDate:", latestDateW);
-        latestDateW.val(latestDate);
-        var id = latestDateW.attr('id');
-        id = id.substring(0, id.indexOf('-value'));
-        console.log("ID: ", id);
-        fluxProcessor.sendValue("" + id, latestDate);
-    }
-}
-
 function initAutocompletes() {
     console.log("init-autocompletes()");
 
@@ -186,27 +129,11 @@ function initAutocompletes() {
         }).on('typeahead:selected', function(e, datum) {
             console.log("typeahead:selected : ", datum);
             var target = jQuery(e.target);
-            var xfValue = $('#' + jObject.attr('callbackSet') + ' .xfRepeatIndex .' + jObject.attr('name') + ' .xfValue');
-            xfValue.val(datum.name);
-
-            var id = xfValue.attr('id');
-            id = id.substring(0, id.indexOf('-value'));
-            console.log("ID: ", id);
-            fluxProcessor.sendValue("" + id, datum.name);
-
-            if (target.attr('queryType') === 'names') {
-                console.log("Names query.");
-                if (datum.type === 'personal') {
-                    handlePerson(jObject, datum);
-                } else if (datum.type === 'corporate') {
-                    handlePerson(jObject, datum);
-                }
-            } else if (target.attr(queryType) === 'subjects') {
-                console.log("Subjects query.");
-            } else {
-                console.log("Unknown query.");
-            }
+            var xfTarget = $('#' + target.attr('callbackSet') + ' .xfRepeatIndex .' + target.attr('name'));
+            //Send event to xformsprocessor with contextinfo
+            fluxProcessor.dispatchEventType( xfTarget.attr('id'), 'autocomplete-callback', { name:datum.name, value:datum.value, internalID:datum.internalID, bio:datum.bio, earliestDate:datum.earliestDate, latestDate:datum.latestDate, uuid:datum.uuid, resource:datum.resource, datumType:datum.type});
         });
+
 
         autocompletes.push(jObject);
     });
