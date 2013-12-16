@@ -10,6 +10,11 @@
             <value/>
         </item>
         <item>
+            <label>actor</label>
+            <value>act</value>
+            <labelSecondary>performed by</labelSecondary>
+        </item>
+        <item>
             <label>artist</label>
             <value>art</value>
         </item>
@@ -31,10 +36,6 @@
             <label>commentator for written text</label>
             <value>cwt</value>
             <labelSecondary>commentary by</labelSecondary>
-        </item>
-        <item>
-            <label>composer</label>
-            <value>cmp</value>
         </item>
         <item>
             <label>compiler</label>
@@ -66,6 +67,11 @@
             <value>cur</value>
         </item>
         <item>
+            <label>director</label>
+            <value>drt</value>
+            <labelSecondary>directed by</labelSecondary>
+        </item>
+        <item>
             <label>depicted</label>
             <value>dpc</value>
         </item>
@@ -94,6 +100,7 @@
         <item>
             <label>interviewer</label>
             <value>ivr</value>
+            <labelSecondary>interviewed by</labelSecondary>
         </item>
         <item>
             <label>manufacturer</label>
@@ -113,6 +120,11 @@
             <labelSecondary>photography by</labelSecondary>
         </item>
         <item>
+            <label>producer</label>
+            <value>pro</value>
+            <labelSecondary>produced by</labelSecondary>
+        </item>
+        <item>
             <label>reporter</label>
             <value>rpt</value>
         </item>
@@ -120,6 +132,10 @@
             <label>reviewer</label>
             <value>rev</value>
             <labelSecondary>reviewed by</labelSecondary>
+        </item>
+        <item type="added">
+            <label>series director</label>
+            <value>sdr</value>
         </item>
         <item>
             <label>thesis advisor</label>
