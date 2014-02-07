@@ -39,7 +39,8 @@
 }
 
 .bf .tt-dropdown-menu {
-  position: relative;        
+  /* Added !important so that at least all suggestions are shown -> lead to "jumping" forms -> need better solution ... */
+  position: relative !important;        
   width: 422px;
   margin-top: 12px;
   padding: 8px 0;
