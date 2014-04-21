@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:bf="http://betterform.sourceforge.net/xforms" xmlns:vra="http://www.vraweb.org/vracore4.htm" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:bfc="http://betterform.sourceforge.net/xforms/controls" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <title>Suggest Test Forms</title>
+        <link rel="stylesheet" type="text/css" href="resources/css/jquery-ui.css"/>
+        <link rel="stylesheet" type="text/css" href="../resources/css/autocomplete.css"/>
+        <link rel="stylesheet" href="../resources/css/font-awesome-4.0.3/css/font-awesome.min.css"/>
+    </head>
+    <body>
+        <div id="xforms">
+            <div style="display:none">
+                <xf:model id="m-model">
+                    <xf:action ev:event="xforms-model-construct-done">
+                        <script>
+                            clearAndInitAutocompletes();
+                        </script>
+                    </xf:action>
+                    <xf:instance id="i-templates">
+                        <templates xmlns="http://www.vraweb.org/vracore4.htm">
+                            <agent pref="false">
+                                <attribution/>
+                                <culture/>
+                                <dates type="">
+                                    <earliestDate circa="false" type=""/>
+                                    <latestDate circa="false" type=""/>
+                                </dates>
+                                <name type=""/>
+                                <role type=""/>
+                            </agent>
+                            <notes/>
+                            <display/>
+                        </templates>
+                    </xf:instance>
+                </xf:model>
+            </div>
+            <div id="controls">
+                <tbody model="m-model" id="r-vraAgent" xf:repeat-nodeset="vra:agent">
+                    <tr>
+                        <td>
+                            <xf:input id="b-d2e180" class="Name-autocomplete" ref="vra:name">
+                                <xf:action ev:event="autocomplete-callback">
+                                    <xf:setvalue ref="." value="event('value')"/>
+                                    <xf:action>
+                                        <xf:insert origin="instance('i-vraAttributes')/vra:vraElement[1]/@refid" context="." if="not(exists(instance('i-agentSet')/vra:agent[index('r-vraAgent')]/@refid))"/>
+                                        <xf:setvalue ref="@refid" value="event('uuid')"/>
+                                    </xf:action>
+                                    <xf:action if="not(exists(event('uuid')) or event('uuid') eq '')">
+                                        <xf:insert origin="instance('i-vraAttributes')/vra:vraElement[1]/@refid" context="." if="not(exists(instance('i-agentSet')/vra:agent[index('r-vraAgent')]/@refid))"/>
+                                        <xf:setvalue ref="@refid" value="event('internalID')"/>
+                                    </xf:action>
+                                    <xf:action>
+                                        <xf:insert origin="instance('i-vraAttributes')/vra:vraElement[1]/@vocab" context="." if="not(exists(instance('i-agentSet')/vra:agent[index('r-vraAgent')]/@vocab))"/>
+                                        <xf:setvalue ref="@vocab" value="event('resource')"/>
+                                    </xf:action>
+                                    <xf:action if="exists(../vra:dates/vra:earliestDate)">
+                                        <xf:setvalue ref="../vra:dates/vra:earliestDate" value="event('earliestDate')"/>
+                                    </xf:action>
+                                    <xf:action if="exists(../vra:dates/vra:latestDate)">
+                                        <xf:setvalue ref="../vra:dates/vra:latestDate" value="event('latestDate')"/>
+                                    </xf:action>
+                                    <xf:action>
+                                        <xf:insert origin="instance('i-vraAttributes')/vra:vraElement[1]/@type" context="." if="not(exists(instance('i-agentSet')/vra:agent[index('r-vraAgent')]/@type))"/>
+                                        <xf:setvalue ref="@type" value="event('datumType')"/>
+                                    </xf:action>
+                                    <xf:action>
+                                        <xf:insert origin="instance('i-vraAttributes')/vra:vraElement[1]/@vocab" context="instance('i-agentSet')/vra:agent[index('r-vraAgent')]/vra:role" if="not(exists(instance('i-agentSet')/vra:agent[index('r-vraAgent')]/vra:role/@vocab))"/>
+                                    </xf:action>
+                                    <xf:action>
+                                        <xf:setvalue ref="instance('i-agentSet')/vra:agent[index('r-vraAgent')]/vra:role/@vocab" value="'marcrelator'"/>
+                                    </xf:action>
+                                    <xf:action>
+                                        <xf:insert origin="instance('i-vraAttributes')/vra:vraElement[1]/@type" context="instance('i-agentSet')/vra:agent[index('r-vraAgent')]/vra:role" if="not(exists(instance('i-agentSet')/vra:agent[index('r-vraAgent')]/vra:role/@type))"/>
+                                    </xf:action>
+                                    <xf:action>
+                                        <xf:setvalue ref="instance('i-agentSet')/vra:agent[index('r-vraAgent')]/vra:role/@type" value="'code'"/>
+                                    </xf:action>
+                                </xf:action>
+                                <xf:label>Name</xf:label>
+                            </xf:input>
+                            <label for="Name-autocomplete">Name</label>
+                            <input type="text" name="Name-autocomplete" class="Name-autocomplete-input" placeholder="Type to search ..." data-queryType="names" data-host="http://localhost:8080" autocomplete="off" data-callbackSet="r-vraAgent"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </div>
+        </div>
+    </body>
+</html>

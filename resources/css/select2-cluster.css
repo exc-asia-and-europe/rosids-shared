@@ -1,0 +1,61 @@
+/* 
+    Document   : select2-cluster.less
+    Created on : 13.04.2014, 16:50:12
+    Author     : zwobit
+    Description:
+*/
+.select2-container {
+  width: 300px;
+}
+.select2-result .term-term {
+  display: inline-block;
+  float: left;
+}
+.select2-result .term-term .term-type {
+  padding-right: 2px;
+}
+.select2-result .term-related {
+  padding-left: 5px;
+  color: #008000;
+}
+.select2-result .term-origin {
+  display: inline-block;
+  float: left;
+  padding-left: 5px;
+}
+.select2-result .term-origin .term-authority {
+  float: left;
+  padding-right: 2px;
+}
+.select2-result .term-origin .term-sources {
+  display: inline-flex;
+  float: left;
+}
+.select2-result .term-origin .img_local {
+  height: 16px;
+  width: 16px;
+  margin: 1px;
+  display: block;
+  background: url("/exist/apps/cluster-shared/resources/images/local.png") no-repeat center;
+}
+.select2-result .term-origin .img_getty {
+  height: 16px;
+  width: 16px;
+  margin: 1px;
+  display: block;
+  background: url("/exist/apps/cluster-shared/resources/images/getty.png") no-repeat center;
+}
+.select2-result .term-origin .img_viaf {
+  height: 16px;
+  width: 16px;
+  margin: 1px;
+  display: block;
+  background: url("/exist/apps/cluster-shared/resources/images/viaf.png") no-repeat center;
+}
+.select2-result .term-origin .img_DNB {
+  height: 16px;
+  width: 16px;
+  margin: 1px;
+  display: block;
+  background: url("/exist/apps/cluster-shared/resources/images/DNB.png") no-repeat center;
+}

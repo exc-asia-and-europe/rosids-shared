@@ -60,7 +60,7 @@ function initAutocompletes() {
                     name: queryType,
                     dataType: "json",
                     minLength: 3,
-                    limit: 20,
+                    limit: 3,
                     template: '<div class="th_wrapper">'
                             + '<div class="th_text_wrapper">'
                             + '<div class="th_value" title="{{type}}">{{value}}</div>'

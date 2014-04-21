@@ -14,6 +14,5 @@
     <description>Shared Resources for cluster applications</description>
     <type>application</type>
     <target>cluster-shared</target>
-    <permissions user="admin" group="biblio.users" mode="0777"/>
     <status>stable</status>
 </meta>

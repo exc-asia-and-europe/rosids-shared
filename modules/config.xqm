@@ -1,4 +1,4 @@
-xquery version "1.0";
+xquery version "3.0";
 
 module namespace config="http://exist-db.org/mods/config";
 
@@ -19,6 +19,13 @@ declare variable $config:app-root :=
     return
         substring-before($modulePath, "/modules")
 ;
+
+(:~ Biblio security - admin user and users group :)
+declare variable $config:biblio-admin-user := "editor";
+declare variable $config:biblio-users-group := "biblio.users";
+
+(:~ Various permissions :)
+declare variable $config:commons-resources-permissions := "rwxrwxr-x";
 
 declare variable $config:mods-root := "/resources";
 declare variable $config:mods-root-minus-temp := ("/resources/commons","/resources/users", "/resources/groups");
@@ -43,7 +50,7 @@ declare variable $config:theme-config := concat($config:themes, "/configuration.
 
 declare variable $config:resources := concat($config:app-root, "/resources");
 declare variable $config:images := concat($config:app-root, "/resources/images");
-declare variable $config:image-service-url := "http://kjc-ws2.kjc.uni-heidelberg.de:85/images/service/download_uuid";
+declare variable $config:image-service-url := "http://kjc-ws2.kjc.uni-heidelberg.de/images/service/download_uuid";
 
 (: If the user has not specified a query, should he see the entire collection contents?
  : Set to true() if a query must be specified, false() to list the entire collection.
@@ -51,7 +58,9 @@ declare variable $config:image-service-url := "http://kjc-ws2.kjc.uni-heidelberg
  :)
 declare variable $config:require-query := true();
 
-(: email invitation settings :)
+(: email invitation settingdeclare function config:process-request-parameter($key as xs:string?) as xs:string {
+    replace(replace($key, "%2C", ","), "%2F", "/")
+};s :)
 declare variable $config:send-notification-emails := false();
 declare variable $config:smtp-server := "smtp.yourdomain.com";
 declare variable $config:smtp-from-address := "exist@yourdomain.com";
@@ -81,4 +90,8 @@ declare function config:rewrite-username($username as xs:string) as xs:string {
             $username
         else
             fn:concat($username, "@", $config:enforced-realm-id)
+};
+
+declare function config:process-request-parameter($key as xs:string?) as xs:string {
+    replace(replace($key, "%2C", ","), "%2F", "/")
 };
