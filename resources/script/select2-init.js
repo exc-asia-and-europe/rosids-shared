@@ -1,6 +1,6 @@
 var autocompletes = {};
 var config = {
-    "host": "http://localhost:8080"
+    "host": "http://localhost:58080"
 }
 
 function clearAndInitAutocompletes() {
@@ -82,13 +82,15 @@ function initAutocompletes() {
             parent = jObject.parent('.xfRepeatItem');
         }
         //console.log("parent: ", parent);
-
+        var name = jObject.attr('name');
+        var key = parent.find('.' + name).attr('id');
+        console.log("KEY: ", key);
+        
         if (parent.length !== 0) {
             if ( autocompletes[key] === undefined ) {
                 var xfValue = parent.find('.' + jObject.attr('name') + ' .xfValue');
                 //console.log("xfValue: ", xfValue, " Value: ", xfValue.val());
-                var key = parent.find('.' + jObject.attr('name')).attr('id');
-                console.log("KEY: ", key);
+               
 
                 //Set input ot xforms value
                 jObject.val(xfValue.val());
