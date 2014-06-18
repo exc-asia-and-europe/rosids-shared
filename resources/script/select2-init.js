@@ -1,6 +1,6 @@
 var autocompletes = {};
 var config = {
-    "host": "http://localhost:58080"
+    "host": "http://kjc-sv013.kjc.uni-heidelberg.de:38080"
 }
 
 function clearAndInitAutocompletes() {
@@ -18,7 +18,12 @@ function clearAndInitAutocompletes() {
     initAutocompletes();
 };
     
-function termFormatResult(term) {
+function termFormatResult(term, container, query) {
+    var markup;
+    
+    if(term.value === 'dummy') {
+        markup = "";
+    } else {
         var type = 'question';
         if(term.type === 'personal') {
             type = 'user'
@@ -28,18 +33,26 @@ function termFormatResult(term) {
             type = 'bookmark'
         }
         
-        var markup = "<table class='term-result'>";
+    
+
+        var regex = new RegExp(query.term, 'gi');
+        var value = term.value.replace(regex, function(match) {return '<b class=""select2-match>'+match+'</b>'});
+
+        markup = "<table class='term-result'>";
         markup += "<tr>";
         markup += "<td class='term-info'>";
             markup += "<div class='term-term'>"
                 markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>"
                 markup += "<span class='term-value'"
-                markup += ">" + term.value;
+                markup += ">" + value;
                     if(term.bio != null) {
                         markup += "<span class='term-bio'> (" + term.bio + ") </span>";
                     }
                     if (term.relatedTerms !== undefined) {
-                        markup += "<i class='term-related fa fa-info-circle fa-lg' title='"+ term.relatedTerms + "'></i>";
+                        //TODO: highlight matches in tooltip!
+                        var relatedTerms = term.relatedTerms.replace(regex, function(match) {return '&lt;b class="select2-match"&gt;'+match+'&lt;/b&gt;'});
+                        //markup += "<i class='term-related fa fa-info-circle fa-lg' title='"+ relatedTerms + "'></i>";
+                        markup += "<i class='term-related fa fa-info-circle fa-lg' title='&lt;span&gt;" + relatedTerms + "&lt;/span&gt;'></i>";
                     }
                 markup +="</span>";
             markup +="</div>";
@@ -64,7 +77,8 @@ function termFormatResult(term) {
         markup += "</td>";
         markup += "</tr>";
         markup += "</table>";
-        return markup;
+    }
+    return markup;
 };
 
 function termFormatSelection(term) {
@@ -104,6 +118,7 @@ function initAutocompletes() {
                     minimumInputLength: 3,
                     formatResult: termFormatResult,
                     formatSelection: termFormatSelection,
+                    formatNoMatches: "<div>No matches</div>",
                     dropdownCssClass: "bigdrop",
                     id: function(object) {
                         var uuid = object.uuid;
@@ -124,11 +139,6 @@ function initAutocompletes() {
                         var term = $(element).val();
                         callback({value: term});
                     },
-                    /*
-                    matcher: function(term, text) {
-                        return text.toUpperCase().indexOf(term.toUpperCase())>=0;
-                    },
-                    */
                     ajax: {
                         url: host + "/exist/apps/cluster-services/modules/services/search/suggest.xq",
                         dataType: "json",
@@ -147,7 +157,11 @@ function initAutocompletes() {
                             }
                             
                             var more = (page * 10) < data.total;
-                            return {results: data.term, more: more};
+                            if( Array.isArray(data.term) ) {
+                                return {results: data.term, more: more};
+                            } else {
+                                return { results: [data.term], more: more};
+                            }
                         }
                     }
                 }).on('select2-selecting', function(e) {
@@ -185,5 +199,7 @@ function initAutocompletes() {
             console.log("initAutocompletes(): ignore parentless element");
         }
     });
+    
+    
 }
 ;

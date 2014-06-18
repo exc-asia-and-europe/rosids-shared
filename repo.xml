@@ -15,4 +15,5 @@
     <type>application</type>
     <target>cluster-shared</target>
     <status>stable</status>
+    <permissions user="editor" group="biblio.users" mode="0755"/>
 </meta>

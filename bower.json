@@ -1,0 +1,18 @@
+{
+  "name": "cluster-shared",
+  "version": "1.1.5.2",
+  "homepage": "https://github.com/zwobit/cluster-shared",
+  "authors": [
+    "Tobi Krebs <tobias.krebs@betterform.de>"
+  ],
+  "description": "Shared Resources for rosid applications",
+  "license": "NONE",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
