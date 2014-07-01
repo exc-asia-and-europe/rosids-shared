@@ -140,7 +140,7 @@ function initAutocompletes() {
                         callback({value: term});
                     },
                     ajax: {
-                        url: host + "/exist/apps/cluster-services/modules/services/search/suggest.xq",
+                        url: host + "/exist/apps/rosids-services/modules/services/search/suggest.xq",
                         dataType: "json",
                         crossDomain: true,
                         data: function(term, page) {
