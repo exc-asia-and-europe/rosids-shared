@@ -1,3 +1,8 @@
+/*
+    TODO:
+        - get collections from select
+        - sent collections to service
+*/
 var autocompletes = {};
 var config = {
     "host": "http://kjc-sv013.kjc.uni-heidelberg.de:38080"
@@ -120,6 +125,8 @@ function initAutocompletes() {
                     formatSelection: termFormatSelection,
                     formatNoMatches: "<div>No matches</div>",
                     dropdownCssClass: "bigdrop",
+                    allowClear: true,
+                    createSearchChoice: function(term) { return { "id" : "-1", "type" : "unknown", "value" : "Add new entry.", "authority" : "", "sources" : "", "src" : "" } },
                     id: function(object) {
                         var uuid = object.uuid;
                         var id;
@@ -164,26 +171,42 @@ function initAutocompletes() {
                             }
                         }
                     }
-                }).on('select2-selecting', function(e) {
+                }).on('change', function(e) {
                     console.log(e.object);
                     var target = jQuery(e.target);
-                    
-                    var uuid = e.object.uuid;
-                    var refid;
-                    if(uuid !== undefined) {
-                        refid = e.object.uuid;
+                    if("" === e.val) {
+                       fluxProcessor.dispatchEventType( target.attr('key'), 'autocomplete-callback', {
+                            termValue:"",
+                            refid:"",
+                            earliestDate:"",
+                            latestDate:"",
+                            authority:"",
+                            termType:""
+                        }); 
+                    } else if ("-1" === e.val){
+                        alert("To be implemented ...");
                     } else {
-                        refid = e.object.id;
+                        var object = null;
+                        if(e.added !== undefined) {
+                            object = e.added;
+                        }
+                        var uuid = object.uuid;
+                        var refid;
+                        if(uuid !== undefined) {
+                            refid = object.uuid;
+                        } else {
+                            refid = object.id;
+                        }
+
+                        fluxProcessor.dispatchEventType( target.attr('key'), 'autocomplete-callback', {
+                            termValue:object.value,
+                            refid:refid,
+                            earliestDate:object.earliestDate,
+                            latestDate:object.latestDate,
+                            authority:object.authority,
+                            termType:object.type
+                        });
                     }
-                    
-                    fluxProcessor.dispatchEventType( target.attr('key'), 'autocomplete-callback', {
-                        termValue:e.object.value,
-                        refid:refid,
-                        earliestDate:e.object.earliestDate,
-                        latestDate:e.object.latestDate,
-                        authority:e.object.authority,
-                        termType:e.object.type
-                    });
                 });
                 }
                
@@ -201,5 +224,4 @@ function initAutocompletes() {
     });
     
     
-}
-;
+};
