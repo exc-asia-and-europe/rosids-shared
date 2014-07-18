@@ -190,22 +190,25 @@ function initAutocompletes() {
                         if(e.added !== undefined) {
                             object = e.added;
                         }
-                        var uuid = object.uuid;
-                        var refid;
-                        if(uuid !== undefined) {
-                            refid = object.uuid;
-                        } else {
-                            refid = object.id;
-                        }
+                        if(object !== null) {
+                            var uuid = object.uuid;
+                            var refid;
+                            if(uuid !== undefined) {
+                                refid = object.uuid;
+                            } else {
+                                refid = object.id;
+                            }
 
-                        fluxProcessor.dispatchEventType( target.attr('key'), 'autocomplete-callback', {
-                            termValue:object.value,
-                            refid:refid,
-                            earliestDate:object.earliestDate,
-                            latestDate:object.latestDate,
-                            authority:object.authority,
-                            termType:object.type
-                        });
+                            fluxProcessor.dispatchEventType( target.attr('key'), 'autocomplete-callback', {
+                                termValue:object.value,
+                                refid:refid,
+                                earliestDate:object.earliestDate,
+                                latestDate:object.latestDate,
+                                authority:object.authority,
+                                src:object.src,
+                                termType:object.type
+                            });
+                        }
                     }
                 });
                 }
