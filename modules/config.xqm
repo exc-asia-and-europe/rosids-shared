@@ -1,4 +1,4 @@
-xquery version "3.0";
+xquery version "1.0";
 
 module namespace config="http://exist-db.org/mods/config";
 
@@ -20,12 +20,9 @@ declare variable $config:app-root :=
         substring-before($modulePath, "/modules")
 ;
 
-(:~ Biblio security - admin user and users group :)
-declare variable $config:biblio-admin-user := "editor";
 declare variable $config:biblio-users-group := "biblio.users";
-
-(:~ Various permissions :)
-declare variable $config:commons-resources-permissions := "rwxrwxr-x";
+declare variable $config:resource-mode := "rw-------";
+declare variable $config:collection-mode := "rwxr-xr-x";
 
 declare variable $config:mods-root := "/resources";
 declare variable $config:mods-root-minus-temp := ("/resources/commons","/resources/users", "/resources/groups");
@@ -50,7 +47,7 @@ declare variable $config:theme-config := concat($config:themes, "/configuration.
 
 declare variable $config:resources := concat($config:app-root, "/resources");
 declare variable $config:images := concat($config:app-root, "/resources/images");
-declare variable $config:image-service-url := "http://kjc-ws2.kjc.uni-heidelberg.de/images/service/download_uuid";
+declare variable $config:image-service-url := "http://kjc-sv016.kjc.uni-heidelberg.de:8600/images/service/download_uuid/";
 
 (: If the user has not specified a query, should he see the entire collection contents?
  : Set to true() if a query must be specified, false() to list the entire collection.
@@ -58,15 +55,13 @@ declare variable $config:image-service-url := "http://kjc-ws2.kjc.uni-heidelberg
  :)
 declare variable $config:require-query := true();
 
-(: email invitation settingdeclare function config:process-request-parameter($key as xs:string?) as xs:string {
-    replace(replace($key, "%2C", ","), "%2F", "/")
-};s :)
+(: email invitation settings :)
 declare variable $config:send-notification-emails := false();
 declare variable $config:smtp-server := "smtp.yourdomain.com";
 declare variable $config:smtp-from-address := "exist@yourdomain.com";
 
 (:~ Credentials for the dba admin user :)
-declare variable $config:dba-credentials := ("admin", ());
+declare variable $config:dba-credentials := ("admin","");
 
 declare variable $config:allow-origin := "";
 
@@ -86,12 +81,12 @@ declare function config:rewrite-username($username as xs:string) as xs:string {
         $username
     return
     
-        if(fn:ends-with(fn:lower-case($username), fn:concat("@", $config:enforced-realm-id)) or fn:lower-case($username) = ("admin", "editor", "guest","testuser1","testuser2","testuser3")) then
+        if(fn:ends-with(fn:lower-case($username), fn:concat("@", $config:enforced-realm-id)) or fn:lower-case($username) = ("admin", "editor", "guest","testuser1","testuser2","testuser3","heraeditor", "vma-editor", "freizo-editor")) then
             $username
         else
             fn:concat($username, "@", $config:enforced-realm-id)
 };
 
 declare function config:process-request-parameter($key as xs:string?) as xs:string {
-    replace(replace($key, "%2C", ","), "%2F", "/")
+    xmldb:encode(replace(replace($key, "%2C", ","), "%2F", "/"))
 };

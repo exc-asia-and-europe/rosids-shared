@@ -12,7 +12,12 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "resources/script/vendor",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "select2": "~3.5.1"
+  }
+
 }

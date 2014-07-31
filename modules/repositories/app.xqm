@@ -44,3 +44,11 @@ declare variable $app:global-subjects-repositories := $app:global-subjects-repos
 :)
 declare variable $app:global-viaf-rdf-repositories := $app:global-viaf-repositories-collection || 'rdf/';
 declare variable $app:global-viaf-xml-repositories := $app:global-viaf-repositories-collection || 'xml/';
+
+declare variable $app:debug as xs:boolean := true();
+
+declare variable $app:repositories-configuration :=  '/repository.xml';
+declare variable $app:global-subjects-repositories-configuration := <repository name="Subjects EXC" authority="local" source="EXC" icon="local"/>;
+declare variable $app:global-persons-repositories-configuration := <repository name="Persons EXC" authority="local" source="EXC" icon="local"/>;
+declare variable $app:global-organisations-repositories-configuration := <repository name="Organisations EXC" authority="local" source="EXC" icon="local"/>;
+declare variable $app:global-default-repositories-configuration := <repository name="Unnamed Repo" authority="local" source="EXC" icon="local"/>;

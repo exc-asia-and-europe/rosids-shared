@@ -4,58 +4,102 @@
     Author     : zwobit
     Description:
 */
-.select2-container {
+span[data-name="global"],
+span[data-name="custom"] {
+  display: inline-block;
+}
+span[data-name="global"] .select2-container,
+span[data-name="custom"] .select2-container {
   width: 300px;
 }
+span[data-name="custom"] {
+  padding-left: 3px;
+}
+span[data-name="autocomplete"] .select2-container {
+  width: 450px;
+}
+.select2-choice .term-result tr td {
+  border: 0 none;
+  padding: 0;
+}
+.select2-choice .term-result tr td {
+  border: 0 none;
+  padding: 0;
+}
+span[data-name="custom-selection"] {
+  display: block;
+  padding-bottom: 5px;
+}
+span[data-name="global"] label,
+span[data-name="custom"] label,
+span[data-name="autocomplete"] label {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 0;
+}
+.select2-choice .term-term,
 .select2-result .term-term {
   display: inline-block;
   float: left;
 }
+.select2-choice .term-term .term-type,
 .select2-result .term-term .term-type {
   padding-right: 2px;
 }
+.select2-choice .term-related,
 .select2-result .term-related {
   padding-left: 5px;
   color: #008000;
 }
+.select2-choice .term-origin,
 .select2-result .term-origin {
   display: inline-block;
   float: left;
   padding-left: 5px;
 }
+.select2-choice .term-origin .term-authority,
 .select2-result .term-origin .term-authority {
   float: left;
   padding-right: 2px;
 }
+.select2-choice .term-origin .term-sources,
 .select2-result .term-origin .term-sources {
   display: inline-flex;
   float: left;
 }
-.select2-result .term-origin .img_local {
+.select2-choice .term-authority.img_local,
+.select2-result .term-authority.img_local {
   height: 16px;
   width: 16px;
-  margin: 1px;
+  margin: 4px;
   display: block;
   background: url("/exist/apps/cluster-shared/resources/images/local.png") no-repeat center;
 }
-.select2-result .term-origin .img_getty {
+.select2-choice .term-authority.img_tgn,
+.select2-result .term-authority.img_tgn,
+.select2-choice .term-authority.img_aat,
+.select2-result .term-authority.img_aat,
+.select2-choice .term-authority.img_getty,
+.select2-result .term-authority.img_getty {
   height: 16px;
   width: 16px;
-  margin: 1px;
+  margin: 4px;
   display: block;
   background: url("/exist/apps/cluster-shared/resources/images/getty.png") no-repeat center;
 }
-.select2-result .term-origin .img_viaf {
+.select2-choice .term-authority.img_viaf,
+.select2-result .term-authority.img_viaf {
   height: 16px;
   width: 16px;
-  margin: 1px;
+  margin: 4px;
   display: block;
   background: url("/exist/apps/cluster-shared/resources/images/viaf.png") no-repeat center;
 }
-.select2-result .term-origin .img_DNB {
+.select2-choice .term-authority.img_DNB,
+.select2-result .term-authority.img_DNB {
   height: 16px;
   width: 16px;
-  margin: 1px;
+  margin: 4px;
   display: block;
   background: url("/exist/apps/cluster-shared/resources/images/DNB.png") no-repeat center;
 }

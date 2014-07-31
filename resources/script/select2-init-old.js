@@ -44,32 +44,6 @@ function formatRepositories(repo) {
     return markup;
 }
 
-function formatRepositoriesSelection(repo) {
-    "use strict";
-    var markup, type;
-    
-    if (repo.repotype === 'user') {
-        type = 'user';
-    } else if (repo.repotype === 'global') {
-        type = 'university';
-    } else if (repo.repotype === 'group') {
-        type = 'group';
-    } else if (repo.repotype === 'custom') {
-        type = 'angle-double-right';
-    }
-    
-    markup = "<span>";
-    if (type !== undefined) {
-        markup +=           '<span class="term-type"><i class="fa fa-' + type + '"></i></span>';
-    } else {
-        markup +=           '<span class="term-authority img_' + repo.icon + '"></span>';
-    }
-    markup += "<span class='term-value'>" + repo.name + "</span>";
-    markup += "</span>";
-    
-    return markup;
-}
-
 
 function termFormatResult(term, container, query) {
     "use strict";
@@ -86,15 +60,15 @@ function termFormatResult(term, container, query) {
     }
 
     regex = new RegExp(query.term, 'gi');
-    value = term.value.replace(regex, function (match) { return '<b class="select2-match">' + match + '</b>'; });
+    value = term.value.replace(regex, function (match) { return '<b>' + match + '</b>'; });
 
     markup = "<table class='term-result'>";
     markup +=   "<tr>";
     markup +=       "<td class='term-info'>";
     markup +=           "<div class='term-term'>";
     markup +=               "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
-    markup +=               "<span class='term-value'";
-    markup +=               ">" + value;
+    markup +=               "<span class='term-value>'";
+    markup +=               "<p>" + value + "</p>";
     if (term.bio !== undefined) {
         markup +=           "<span class='term-bio'> (" + term.bio + ") </span>";
     }
@@ -140,10 +114,9 @@ function initAutocompletes() {
     //console.log("initAutocompletes(): ", autocompletes);
 
     $(".xfRepeatItem [name$=-autocomplete-input]").each(function () {
-        var autocompleteInput, autocompleteGroup, xfRoot, name, multiple, key, globalSelect, xfValue, queryType, targetid;
+        var autocompleteInput, autocompleteGroup, xfRoot, name, multiple, key, globalSelect, xfValue, queryType;
         autocompleteInput = $(this);
         autocompleteGroup = $(autocompleteInput.parent('span[data-name = "autocomplete"]').parent('span[data-name$= "-autocomplete"]'));
-        
 
         xfRoot = autocompleteGroup.parent('.xfContainer');
         if (xfRoot.length === 0) {
@@ -240,14 +213,9 @@ function initAutocompletes() {
 
                 //Set input ot xforms value
                 autocompleteInput.val(xfValue.val());
-                //Get xforms-input-id
-                targetid = xfRoot.find('.' + autocompleteInput.attr('data-name')).attr('id');
-                
                 queryType = autocompleteInput.attr('data-queryType');
 
                 if (!(autocompleteInput.hasClass('select2-container'))) {
-                    autocompleteInput.attr('targetid', targetid);
-                    
                     autocompleteInput.select2({
                         name: queryType,
                         placeholder: "Search for a term",
@@ -306,12 +274,10 @@ function initAutocompletes() {
                         }
                     }).on('change', function (e) {
                         //console.log(e.object);
-                        var target, object, uuid, refid, targetid;
+                        var target, object, uuid, refid;
                         target = $(e.target);
-                        targetid = target.attr('targetid');
-                        
                         if ("" === e.val) {
-                            fluxProcessor.dispatchEventType(targetid, 'autocomplete-callback', {
+                            fluxProcessor.dispatchEventType(target.attr('key'), 'autocomplete-callback', {
                                 termValue: "",
                                 refid: "",
                                 earliestDate: "",
@@ -335,7 +301,7 @@ function initAutocompletes() {
                                     refid = object.id;
                                 }
 
-                                fluxProcessor.dispatchEventType(targetid, 'autocomplete-callback', {
+                                fluxProcessor.dispatchEventType(target.attr('key'), 'autocomplete-callback', {
                                     termValue: object.value,
                                     refid: refid,
                                     earliestDate: object.earliestDate,
@@ -348,7 +314,9 @@ function initAutocompletes() {
                         }
                     });
                 }
-                
+
+
+                autocompleteInput.attr('key', key);
                 autocompletes[key] = autocompleteInput;
                 //console.log("initAutocompletes(): " , autocompletes);
                 //console.log("initAutocompletes(): " , autocompletes[key]);
