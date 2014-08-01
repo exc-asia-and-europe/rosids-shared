@@ -1,17 +1,12 @@
 xquery version "3.0";
 
-import module namespace app="http://exist-db.org/xquery/biblio/shared/app" at "app.xqm";
-import module namespace security="http://exist-db.org/mods/security" at "../search/security.xqm";
+import module namespace app="http://www.betterform.de/projects/shared/config/app" at "/apps/cluster-shared/modules/ziziphus/config/app.xqm";
+import module namespace security="http://exist-db.org/mods/security" at "/apps/cluster-shared/modules/search/security.xqm";
 
 declare variable $user := security:get-user-credential-from-session()[1];
 declare variable $userpass := security:get-user-credential-from-session()[2];
 
 declare option exist:serialize "method=json media-type=text/javascript";
-
-(:
-    let $user := replace(request:get-parameter("user", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
-    let $group := replace(request:get-parameter("user", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
-:)
 
 declare %private function local:getGlobalCollection($type as xs:string) {
     let $name := 
@@ -55,14 +50,14 @@ declare %private function local:getGroupCollections($group as xs:string, $type a
         else () 
 };
 
-declare %private function local:getRepositories($user as xs:string, $groups as xs:string*, $type as xs:string, $sgroup as xs:string) {
+declare %private function local:getRepositories($user as xs:string, $groups as xs:string*, $type as xs:string, $category as xs:string) {
     let $global := local:getGlobalCollection($type)
     let $local := ( local:getUserCollection($user, $type), for $group in $groups
         return 
             local:getGroupCollections($group, $type) )
     return
    
-        if($sgroup eq 'global')
+        if($category eq 'global')
         then (
             $global,
             if(count($local) > 0) then (<repository repotype="custom" id="-1" termtype="{$type}" name="Use custom vocab" collection="local"/>) else ()
@@ -72,12 +67,12 @@ declare %private function local:getRepositories($user as xs:string, $groups as x
 };
 
 let $cors := response:set-header("Access-Control-Allow-Origin", "*")
-let $sgroup := replace(request:get-parameter("group", "global"), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
+let $user := replace(request:get-parameter("user", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
+let $groups := replace(request:get-parameter("groups", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
+let $category := replace(request:get-parameter("category", "global"), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
 let $type := replace(request:get-parameter("type", "subjects"), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
 let $log1 := util:log('info','user: ' || $user)
-let $log1 := util:log('info','userpass: ' || $userpass)
-let $user := "admin"
-let $userpass := ""
-let $groups := system:as-user($user, $userpass, ( sm:get-user-groups($user) ) )
+let $log1 := util:log('info','groups: ' || $groups)
+let $log1 := util:log('info','category: ' || $category)
 return
-   <data><total>0</total>{local:getRepositories($user, $groups, $type, $sgroup)}</data>
+   <data><total>0</total>{local:getRepositories($user, $groups, $type, $category)}</data>

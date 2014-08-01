@@ -2,13 +2,11 @@
 /*global $, window, document */
 
 var autocompletes = {};
+var model = {};
 
 var config = {
     "host": "http://localhost:8080"
 };
-
-
-
 
 /* GLOBAL+CUSTOM helper functions */
 function formatRepositories(repo) {
@@ -138,7 +136,7 @@ function initAutocompletes() {
     "use strict";
     //console.log("initAutocompletes()");
     //console.log("initAutocompletes(): ", autocompletes);
-
+    
     $(".xfRepeatItem [name$=-autocomplete-input]").each(function () {
         var autocompleteInput, autocompleteGroup, xfRoot, name, multiple, key, globalSelect, xfValue, queryType, targetid;
         autocompleteInput = $(this);
@@ -164,8 +162,9 @@ function initAutocompletes() {
                     globalSelect = autocompleteGroup.find('input[name = "global-select"]');
 
                     $.ajax({
-                        url: config.host + '/exist/apps/cluster-shared/modules/repositories/repositories.xq',
+                        url: config.host + '/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq',
                         dataType: 'json',
+                        data: model,
                         crossDomain: true,
                         success: function (data) {
                             var globalOptions = data.repository;
@@ -178,15 +177,16 @@ function initAutocompletes() {
                                     escapeMarkup: function (m) { return m; },
                                     data: {
                                         results: globalOptions,
-                                        text: 'name'
+                                        text: 'name',
                                     }
                                 }).on('change', function (e) {
                                     var customSelect = autocompleteGroup.find('input[name = "custom-select"]');
                                     if (e.added.id === '-1') {
                                         $.ajax({
-                                            url: config.host + "/exist/apps/cluster-shared/modules/repositories/repositories.xq?group=custom",
+                                            url: config.host + "/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
                                             dataType: "json",
                                             crossDomain: true,
+                                            data: model,
                                             success: function (data) {
                                                 var customOptions;
 
@@ -386,3 +386,14 @@ function clearAndInitAutocompletes() {
     autocompletes = {};
     initAutocompletes();
 }
+
+function init(data) {
+    "use strict";
+    model['user'] = data.querySelector('user').innerHTML;
+    model['groups'] = data.querySelector('groups').innerHTML;
+}
+
+$( document ).ready(function() {
+    "use strict";
+    Flux.getInstanceDocument('m-main', 'i-user', fluxProcessor.sessionKey, init);
+});
