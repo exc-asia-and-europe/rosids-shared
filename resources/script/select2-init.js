@@ -157,7 +157,7 @@ function initAutocompletes() {
                 //Save autocompleteGroup for later
                 autocompletes[key] = autocompleteGroup;
 
-                if(multiple != undefined && multiple === 'true') {
+                if (multiple !== undefined && multiple === 'true') {
                     /* GLOBAL  + CUSTOM Selects*/
                     globalSelect = autocompleteGroup.find('input[name = "global-select"]');
 
@@ -177,7 +177,7 @@ function initAutocompletes() {
                                     escapeMarkup: function (m) { return m; },
                                     data: {
                                         results: globalOptions,
-                                        text: 'name',
+                                        text: 'name'
                                     }
                                 }).on('change', function (e) {
                                     var customSelect = autocompleteGroup.find('input[name = "custom-select"]');

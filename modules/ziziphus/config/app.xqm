@@ -9,7 +9,7 @@ module namespace app="http://www.betterform.de/projects/shared/config/app";
 (: Enable debugging in xqueries :)
 declare variable $app:debug as xs:boolean := true();
 
-
+declare %private variable $app:data-dir as xs:string := "/db/resources/";      
 
 
 declare  %private variable $app:shared-dir as xs:string := "/apps/cluster-shared";
@@ -55,10 +55,10 @@ declare variable $app:global-subjects-repositories-configuration := <repository 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 
 (: "Mirrors" : viaf, getty :)
-declare %private variable $app:global-mirrors-repositories-collection := app:repositories-collection || "/global/externalmirrors/";
+declare %private variable $app:global-mirrors-repositories-collection := $app:repositories-collection || "global/externalmirrors/";
 
 (: viaf :)
-declare %private variable $app:global-viaf-repositories-collection := $app:global-mirrors-repositories-collection || "viaf/";
+declare %private variable $app:global-viaf-repositories-collection := $app:global-mirrors-repositories-collection || "viaf-small/";
 
 (: rdf data :)
 declare variable $app:global-viaf-rdf-repositories := $app:global-viaf-repositories-collection || 'rdf/';
@@ -82,10 +82,10 @@ declare variable $app:repositories-configuration :=  '/repository.xml';
 declare variable $app:global-default-repositories-configuration := <repository name="Unnamed Repo" authority="---" source="---" icon="unnamed"/>;
 
 (: User :)
-declare %private variable $app:users-repositories-collection := app:repositories-collection || "users/";
+declare variable $app:users-repositories-collection := $app:repositories-collection || "users/";
 
 (: Groups :)
-declare %private variable $app:groups-repositories-collection := app:repositories-collection || "groups/";
+declare variable $app:groups-repositories-collection := $app:repositories-collection || "groups/";
 
 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
@@ -95,7 +95,6 @@ declare %private variable $app:ziziphus-collection-name as xs:string := "Priya_P
 declare variable $app:ziziphus-resources-dir as xs:string := $app:ziziphus-dir || "/resources/";
 declare variable $app:ziziphus-default-record-dir as xs:string := $app:common-data-dir || $app:ziziphus-collection-name || "/";  
 
-declare %private variable $app:data-dir as xs:string := "/db/resources/";      
 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 (: shared :)

@@ -16,8 +16,17 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "select2": "~3.5.1"
+  "devDependencies": {
+    "select2": "~3.5.1",
+    "jquery-ui": "~1.11.0",
+    "jquery.layout": "master",
+    "blueimp-gallery": "~2.15.1",
+    "animate.css": "~3.2.0",
+    "purl": "~2.3.1",
+    "jquery": "<2.1.0",
+    "bootstrap2.3.2": "git://github.com/alonisser/bower-bootstrap-2.3.2-legacy.git#legacy2.3.2",
+    "font-awesome": "~4.1.0",
+    "galleria": "master",
+    "image-picker": "git@github.com:rvera/image-picker.git"
   }
-
 }
