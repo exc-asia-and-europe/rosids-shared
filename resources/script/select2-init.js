@@ -81,7 +81,12 @@ function termFormatResult(term, container, query) {
         type = 'globe';
     } else if (term.type === 'subject') {
         type = 'bookmark';
+    } else if (term.type === 'materials' || term.type === 'techniques' || term.type === 'worktypes') {
+        type = 'paint-brush';
+    } else if (term.type === 'styleperiods') {
+        type = 'clock-o';
     }
+     
 
     regex = new RegExp(query.term, 'gi');
     value = term.value.replace(regex, function (match) { return '<b class="select2-match">' + match + '</b>'; });
