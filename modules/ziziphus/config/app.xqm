@@ -52,6 +52,13 @@ declare variable $app:global-organisations-repositories-configuration := <reposi
 declare %private variable $app:global-subjects-repositories-collection := $app:global-repositories-collection || "subjects/";
 declare variable $app:global-subjects-repositories-configuration := <repository name="Subjects EXC" authority="local" source="EXC" icon="local"/>;
 
+declare variable $app:aat-facets := map {
+    "worktypes" := "V",
+    "styleperiods" := "F.FL",
+    "techniques" := "K.KT",
+    "materials" := "M.MT, V.TH"
+};
+
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 
 (: "Mirrors" : viaf, getty :)
