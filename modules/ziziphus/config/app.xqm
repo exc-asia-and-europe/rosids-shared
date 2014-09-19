@@ -91,7 +91,7 @@ declare variable $app:groups-repositories-collection := $app:repositories-collec
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 (: ziziphus :)
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
-declare %private variable $app:ziziphus-collection-name as xs:string := "Priya_Paul_Collection";
+declare %private variable $app:ziziphus-collection-name as xs:string := "Priya Paul Collection";
 declare variable $app:ziziphus-resources-dir as xs:string := $app:ziziphus-dir || "/resources/";
 declare variable $app:ziziphus-default-record-dir as xs:string := $app:common-data-dir || $app:ziziphus-collection-name || "/";  
 
