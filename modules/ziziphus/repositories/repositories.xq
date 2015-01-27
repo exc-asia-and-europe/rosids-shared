@@ -24,7 +24,7 @@ declare %private function local:getGlobalCollection($type as xs:string) {
 };
 
 declare %private function local:getUserCollection($user as xs:string, $type as xs:string) {
-    let $collection := $app:users-repositories-collection || $user || '/' || $type
+    let $collection := xmldb:encode($app:users-repositories-collection || $user || '/' || $type)
     return
             if ( xmldb:collection-available($collection) and count(xmldb:get-child-resources($collection)) > 0)
             then (
@@ -38,7 +38,7 @@ declare %private function local:getUserCollection($user as xs:string, $type as x
 
 declare %private function local:getGroupCollections($group as xs:string, $type as xs:string) {
     let $collection := $app:groups-repositories-collection || $group || '/' || $type || '/'
-    let $log1 := util:log('info','colLection: ' || $collection)
+    let $log1 := util:log('info','collection: ' || $collection)
     return
         if (xmldb:collection-available($collection) and count(xmldb:get-child-resources($collection)) > 0)
         then (
@@ -67,8 +67,8 @@ declare %private function local:getRepositories($user as xs:string, $groups as x
 };
 
 let $cors := response:set-header("Access-Control-Allow-Origin", "*")
-let $user := replace(request:get-parameter("user", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
-let $groups := tokenize(replace(request:get-parameter("groups", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", ""), " ")
+let $user := replace(request:get-parameter("user", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]@", "")
+let $groups := tokenize(replace(request:get-parameter("groups", ""), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]@", ""), " ")
 let $category := replace(request:get-parameter("category", "global"), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
 let $type := replace(request:get-parameter("type", "subjects"), "[^0-9a-zA-ZäöüßÄÖÜ\-,. ]", "")
 let $log1 := util:log('info','user: ' || $user)

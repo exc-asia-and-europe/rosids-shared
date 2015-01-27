@@ -25,7 +25,7 @@
     "purl": "~2.3.1",
     "jquery": "<2.1.0",
     "bootstrap2.3.2": "git://github.com/alonisser/bower-bootstrap-2.3.2-legacy.git#legacy2.3.2",
-    "font-awesome": "~4.1.0",
+    "font-awesome": "~4.2.0",
     "galleria": "master",
     "image-picker": "git@github.com:rvera/image-picker.git"
   }

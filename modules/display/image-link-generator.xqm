@@ -2,18 +2,18 @@ xquery version "3.0";
 
 module namespace image-link-generator="http://hra.uni-heidelberg.de/ns/tamboti/modules/display/image-link-generator";
 
-import module namespace config="http://exist-db.org/mods/config" at "../config.xqm";
+import module namespace config="http://exist-db.org/mods/config" at "/db/apps/cluster-shared/modules/config.xqm";
+import module namespace security="http://exist-db.org/mods/security" at "/db/apps/cluster-shared/modules/search/security.xqm";
 
 declare namespace vra="http://www.vraweb.org/vracore4.htm";
-declare variable $image-link-generator:services := doc("../config/services.xml");
+declare variable $image-link-generator:services := doc("../configuration/services.xml");
 
 declare function image-link-generator:generate-href($image-uuid, $uri-name) {
-    let $vra-image := collection($config:mods-root)//vra:image[@id=$image-uuid][1]
-    return
-    if(empty($vra-image)) then
-        (: insert href to "not found"-image here :)
-        "#"
+    if (not($image-uuid)) then
+        ()
     else
+
+        let $vra-image := security:get-resource($image-uuid)
         let $image-href := data($vra-image/@href)
         
         (: get image-service :)
@@ -25,7 +25,6 @@ declare function image-link-generator:generate-href($image-uuid, $uri-name) {
         
         (: get image service definitons   :)
         let $image-service := $image-link-generator:services//service/image-service[@name=$image-service-name]
-        
         return 
             let $image-service-uri := $image-service/uri[@type="get" and @name=$uri-name]
             return 
@@ -35,10 +34,11 @@ declare function image-link-generator:generate-href($image-uuid, $uri-name) {
                         let $key := data($variable/@key)
                         let $query-string := "$vra-image/" || $variable/text()
                         let $value := xs:string(data(util:eval($query-string)))
-    (:                    let $log := util:log("INFO", $vra-image):)
                         return
-        (:                    $value:)
-                            replace($image-service-uri/url/text(), "\[" || $pos ||"\]" , $value)
+                            if($value) then
+                                replace($image-service-uri/url/text(), "\[" || $pos ||"\]" , $value)
+                            else 
+                                ()
                 return
                     $image-url
 };

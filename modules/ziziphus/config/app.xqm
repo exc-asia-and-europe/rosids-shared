@@ -9,6 +9,7 @@ module namespace app="http://www.betterform.de/projects/shared/config/app";
 (: Enable debugging in xqueries :)
 declare variable $app:debug as xs:boolean := true();
 
+declare variable $app:db as xs:string := "/db/"; 
 declare %private variable $app:data-dir as xs:string := "/db/resources/";      
 
 
@@ -37,26 +38,48 @@ declare variable $app:service-port := "8080";
 declare variable $app:remote-service-collection := "xmldb:exist://" || $app:service-host || ":" || $app:service-port || "/exist/xmlrpc/db/";
 
 
+
 (: collection paths and configurations for EXC repositories :)
 declare %private variable $app:global-repositories-collection := $app:repositories-collection || "global/";
 
+
+(:  Default group for repositories :)
+declare %private variable $app:default-repositories-group := "biblio.users";
+declare %private variable $app:default-repositories-collection := $app:repositories-collection || "local/groups/" || $app:default-repositories-group || "/";
+
 (: persons :)
-declare %private variable $app:global-persons-repositories-collection := $app:global-repositories-collection || "persons/";
+declare %private variable $app:global-persons-repositories-collection := $app:default-repositories-collection || "persons/";
 declare variable $app:global-persons-repositories-configuration := <repository name="Persons EXC" authority="local" source="EXC" icon="local"/>;
 
 (: organisations :)
-declare %private variable $app:global-organisations-repositories-collection := $app:global-repositories-collection || "organisations/";
+declare %private variable $app:global-organisations-repositories-collection := $app:default-repositories-collection || "organisations/";
 declare variable $app:global-organisations-repositories-configuration := <repository name="Organisations EXC" authority="local" source="EXC" icon="local"/>;
 
 (: subjects :)
-declare %private variable $app:global-subjects-repositories-collection := $app:global-repositories-collection || "subjects/";
+declare %private variable $app:global-subjects-repositories-collection := $app:default-repositories-collection || "subjects/";
 declare variable $app:global-subjects-repositories-configuration := <repository name="Subjects EXC" authority="local" source="EXC" icon="local"/>;
 
+(: materials :)
+declare %private variable $app:global-materials-repositories-collection := $app:default-repositories-collection || "materials/";
+declare variable $app:global-materials-repositories-configuration := <repository name="Materials EXC" authority="local" source="EXC" icon="local"/>;
+
+(: styleperiods :)
+declare %private variable $app:global-styleperiods-repositories-collection := $app:default-repositories-collection || "styleperiods/";
+declare variable $app:global-styleperiods-repositories-configuration := <repository name="Styleperiods EXC" authority="local" source="EXC" icon="local"/>;
+
+(: Techniques :)
+declare %private variable $app:global-techniques-repositories-collection := $app:default-repositories-collection || "techniques/";
+declare variable $app:global-techniques-repositories-configuration := <repository name="Techniques EXC" authority="local" source="EXC" icon="local"/>;
+
+(: Worktypes :)
+declare %private variable $app:global-worktypes-repositories-collection := $app:default-repositories-collection || "worktypes/";
+declare variable $app:global-worktypes-repositories-configuration := <repository name="Worktypes EXC" authority="local" source="EXC" icon="local"/>;
+
 declare variable $app:aat-facets := map {
-    "worktypes" := "V",
+    "materials" := "M.MT, V.TH",
     "styleperiods" := "F.FL",
     "techniques" := "K.KT",
-    "materials" := "M.MT, V.TH"
+    "worktypes" := "V"
 };
 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
@@ -89,10 +112,10 @@ declare variable $app:repositories-configuration :=  '/repository.xml';
 declare variable $app:global-default-repositories-configuration := <repository name="Unnamed Repo" authority="---" source="---" icon="unnamed"/>;
 
 (: User :)
-declare variable $app:users-repositories-collection := $app:repositories-collection || "users/";
+declare variable $app:users-repositories-collection := $app:repositories-collection || "local/users/";
 
 (: Groups :)
-declare variable $app:groups-repositories-collection := $app:repositories-collection || "groups/";
+declare variable $app:groups-repositories-collection := $app:repositories-collection || "local/groups/";
 
 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
@@ -112,3 +135,17 @@ declare variable $app:legends as xs:string := $app:shared-dir || "/modules/edit/
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 (: tamboti :)
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
+
+declare variable $app:dba-credentials := app:get-dba-credentials();
+
+declare %private function app:get-dba-credentials() {
+    let $config-ns := xs:anyURI("http://exist-db.org/mods/config")
+    let $config-path := xs:anyURI('/apps/tamboti/modules/config.xqm ')
+    return 
+        try {
+            let $import := util:import-module($config-ns, "config", $config-path)
+            return $config:dba-credentials
+        } catch * {
+            ("admin","")
+        }
+};

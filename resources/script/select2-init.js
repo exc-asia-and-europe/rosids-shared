@@ -8,20 +8,21 @@ var config = {
     "host": "http://localhost:8080"
 };
 
+function escapeRegExp(str) {
+    "use strict";
+    if(str !== undefined) {
+        return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
+    
+    return ""
+}
+
 /* GLOBAL+CUSTOM helper functions */
 function formatRepositories(repo) {
     "use strict";
     var markup, type;
 
-    if (repo.repotype === 'user') {
-        type = 'user';
-    } else if (repo.repotype === 'global') {
-        type = 'university';
-    } else if (repo.repotype === 'group') {
-        type = 'group';
-    } else if (repo.repotype === 'custom') {
-        type = 'angle-double-right';
-    }
+    type = _repoIcon(repo.repotype);
 
     markup = '<table class="term-result">';
     markup +=   '<tr>';
@@ -45,17 +46,9 @@ function formatRepositories(repo) {
 function formatRepositoriesSelection(repo) {
     "use strict";
     var markup, type;
-    
-    if (repo.repotype === 'user') {
-        type = 'user';
-    } else if (repo.repotype === 'global') {
-        type = 'university';
-    } else if (repo.repotype === 'group') {
-        type = 'group';
-    } else if (repo.repotype === 'custom') {
-        type = 'angle-double-right';
-    }
-    
+
+    type = _repoIcon(repo.repotype);
+
     markup = "<span>";
     if (type !== undefined) {
         markup +=           '<span class="term-type"><i class="fa fa-' + type + '"></i></span>';
@@ -64,7 +57,7 @@ function formatRepositoriesSelection(repo) {
     }
     markup += "<span class='term-value'>" + repo.name + "</span>";
     markup += "</span>";
-    
+
     return markup;
 }
 
@@ -74,21 +67,10 @@ function termFormatResult(term, container, query) {
     var markup, type, regex, value, relatedTerms, sources, i;
 
 
-    type = 'question';
-    if (term.type === 'personal') {
-        type = 'user';
-    } else if (term.type === 'corporate') {
-        type = 'globe';
-    } else if (term.type === 'subject') {
-        type = 'bookmark';
-    } else if (term.type === 'materials' || term.type === 'techniques' || term.type === 'worktypes') {
-        type = 'paint-brush';
-    } else if (term.type === 'styleperiods') {
-        type = 'clock-o';
-    }
-     
+    type = _termIcon(term.type);
 
-    regex = new RegExp(query.term, 'gi');
+    console.log('Query: ', query);
+    regex = new RegExp(escapeRegExp(query.term), 'gi');
     value = term.value.replace(regex, function (match) { return '<b class="select2-match">' + match + '</b>'; });
 
     markup = "<table class='term-result'>";
@@ -101,10 +83,8 @@ function termFormatResult(term, container, query) {
     if (term.bio !== undefined) {
         markup +=           "<span class='term-bio'> (" + term.bio + ") </span>";
     }
-    if (term.relatedTerms !== undefined) {
-        //TODO: highlight matches in tooltip!
+    if (term.relatedTerms !== undefined) {        
         relatedTerms = term.relatedTerms.replace(regex, function (match) {return '&lt;b&gt;' + match + '&lt;/b&gt;'; });
-        //markup += "<i class='term-related fa fa-info-circle fa-lg' title='"+ relatedTerms + "'></i>";
         markup +=               "<i class='term-related fa fa-info-circle fa-lg' title='&lt;span&gt;" + relatedTerms + "&lt;/span&gt;'></i>";
     }
     markup +=               "</span>";
@@ -127,7 +107,26 @@ function termFormatResult(term, container, query) {
     markup +=           "</div>";
     markup +=       "</td>";
     markup +=   "</tr>";
+    markup +=   "<tr>";
+    markup +=   "</tr>";
     markup += "</table>";
+    
+    /* TODO*/
+    /*
+    if (term.relatedTerms !== undefined) {
+        var relTerms = term.relatedTerms
+        markup += "<div style='display:none' id='tooltip-" + id + "'>";
+        markup +=       "<div>";
+        markup +=           "<table>";
+        for(j = 0; j < sources.length; j++))
+        markup +=               "<tr>";
+        markup +=               "<td>" + relterm;
+        markup +=               "</td>";
+        markup +=               "</tr>";
+        markup +=           "</table>";
+        markup +=       "</div>";
+        markup += "</div>";
+    */
 
     return markup;
 }
@@ -137,127 +136,154 @@ function termFormatSelection(term) {
     return term.value;
 }
 
-function initAutocompletes() {
+function _initRepositories(parentNode, parentId) {
     "use strict";
-    //console.log("initAutocompletes()");
-    //console.log("initAutocompletes(): ", autocompletes);
+    var globalSelect;
     
-    $(".xfRepeatItem [name$=-autocomplete-input]").each(function () {
-        var autocompleteInput, autocompleteGroup, xfRoot, name, multiple, key, globalSelect, xfValue, queryType, targetid;
-        autocompleteInput = $(this);
-        autocompleteGroup = $(autocompleteInput.parent('span[data-name = "autocomplete"]').parent('span[data-name$= "-autocomplete"]'));
-        
+    globalSelect = parentNode.find('input[name = "global-select"]');
 
-        xfRoot = autocompleteGroup.parent('.xfContainer');
-        if (xfRoot.length === 0) {
-            xfRoot = autocompleteGroup.parent('.xfRepeatItem');
-        }
+    $.ajax({
+        url: config.host + '/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq',
+        dataType: 'json',
+        data: model,
+        crossDomain: true,
+        success: function (data) {
+            var globalOptions = data.repository;
 
-        name = autocompleteInput.attr('name');
-        multiple = autocompleteGroup.attr('data-multiple');
-        key = xfRoot.attr('id');
+            if (Array.isArray(data.repository) && data.repository.length > 1) {
+                globalSelect.select2({
+                    minimumResultsForSearch: -1,
+                    formatResult: formatRepositories,
+                    formatSelection: formatRepositories,
+                    escapeMarkup: function (m) { return m; },
+                    data: {
+                        results: globalOptions,
+                        text: 'name'
+                    }
+                }).on('change', function (e) {
+                    var customSelect = parentNode.find('input[name = "custom-select"]');
+                    if (e.added.id === '-1') {
+                        $.ajax({
+                            url: config.host + "/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
+                            dataType: "json",
+                            crossDomain: true,
+                            data: model,
+                            success: function (data) {
+                                var customOptions;
 
-        if (xfRoot.length !== 0) {
-            if (autocompletes[key] === undefined) {
-                //Save autocompleteGroup for later
-                autocompletes[key] = autocompleteGroup;
+                                if (Array.isArray(data.repository)) {
+                                    customOptions =  data.repository;
+                                } else {
+                                    customOptions = [data.repository];
+                                }
 
-                if (multiple !== undefined && multiple === 'true') {
-                    /* GLOBAL  + CUSTOM Selects*/
-                    globalSelect = autocompleteGroup.find('input[name = "global-select"]');
+                                customSelect.attr('value', customOptions[0].id);
+                                parentNode.prop('data-collections', customOptions[0].collection);
+                                //console.log(autocompleteGroup.prop('data-collections'));
 
-                    $.ajax({
-                        url: config.host + '/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq',
-                        dataType: 'json',
-                        data: model,
-                        crossDomain: true,
-                        success: function (data) {
-                            var globalOptions = data.repository;
-
-                            if (Array.isArray(data.repository) && data.repository.length > 1) {
-                                globalSelect.select2({
+                                customSelect.select2({
                                     minimumResultsForSearch: -1,
                                     formatResult: formatRepositories,
                                     formatSelection: formatRepositories,
+                                    placeholderOption: 'first',
                                     escapeMarkup: function (m) { return m; },
                                     data: {
-                                        results: globalOptions,
+                                        results: customOptions,
                                         text: 'name'
                                     }
                                 }).on('change', function (e) {
-                                    var customSelect = autocompleteGroup.find('input[name = "custom-select"]');
-                                    if (e.added.id === '-1') {
-                                        $.ajax({
-                                            url: config.host + "/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
-                                            dataType: "json",
-                                            crossDomain: true,
-                                            data: model,
-                                            success: function (data) {
-                                                var customOptions;
-
-                                                if (Array.isArray(data.repository)) {
-                                                    customOptions =  data.repository;
-                                                } else {
-                                                    customOptions = [data.repository];
-                                                }
-
-                                                customSelect.attr('value', customOptions[0].id);
-                                                autocompleteGroup.prop('data-collections', customOptions[0].collection);
-                                                //console.log(autocompleteGroup.prop('data-collections'));
-
-                                                customSelect.select2({
-                                                    minimumResultsForSearch: -1,
-                                                    formatResult: formatRepositories,
-                                                    formatSelection: formatRepositories,
-                                                    placeholderOption: 'first',
-                                                    escapeMarkup: function (m) { return m; },
-                                                    data: {
-                                                        results: customOptions,
-                                                        text: 'name'
-                                                    }
-                                                }).on('change', function (e) {
-                                                    autocompleteGroup.prop('data-collections', e.added.collection);
-                                                    //console.log(autocompleteGroup.prop('data-collections') + ":" + autocompletes[key].prop('data-collections'));
-                                                });
-                                                autocompleteGroup.find('span[data-name = "custom"]').show();
-                                            }
-                                        });
-                                    } else {
-                                        autocompleteGroup.find('span[data-name = "custom"]').hide();
-
-                                        $.each(customSelect.find('option'), function (index, value) {
-                                            $(value).remove();
-                                        });
-                                        customSelect.select2("destroy");
-                                        autocompleteGroup.prop('data-collections', e.added.collection);
-                                    }
+                                    parentNode.prop('data-collections', e.added.collection);
+                                    //console.log(autocompleteGroup.prop('data-collections') + ":" + autocompletes[key].prop('data-collections'));
                                 });
-
-                                //console.log("GlobalGroup: " + autocompleteGroup.find('span[name = "global"]'));
-                                autocompleteGroup.find('span[data-name = "global"]').show();
+                                parentNode.find('span[data-name = "custom"]').show();
                             }
-                        }
-                    });
-                }
-                xfValue = xfRoot.find('.' + autocompleteInput.attr('data-name') + ' .xfValue');
-                //console.log("xfValue: ", xfValue, " Value: ", xfValue.val());
+                        });
+                        //Save CustomSelect so we can destroy it later    
+                        customSelect.attr('id', parentId + 'CS');
+                        autocompletes[parentId + 'CS'] = customSelect;
+                    } else {
+                        parentNode.find('span[data-name = "custom"]').hide();
+
+                        $.each(customSelect.find('option'), function (index, value) {
+                            $(value).remove();
+                        });
+                        parentNode.prop('data-collections', e.added.collection);
+                        
+                        customSelect.select2("destroy");
+                        //Remove customeSelect from registry as it is allready destroyed
+                        autocompletes[parentId + 'CS'] = undefined;
+                    }
+                });
+                parentNode.find('span[data-name = "global"]').show();
+
+                //Save GlobalSelect so we can destroy it later
+                globalSelect.attr('id', parentId + 'GS');
+                autocompletes[parentId + 'GS'] = globalSelect;
+            }
+        }
+    });
+}
 
 
-                //Set input ot xforms value
-                autocompleteInput.val(xfValue.val());
-                //Get xforms-input-id
-                targetid = xfRoot.find('.' + autocompleteInput.attr('data-name')).attr('id');
+function initAutocompletes() {
+    "use strict";
+
+    $(".xfRepeatItem [name$=-autocomplete-input]").each(function () {
+        var autocompleteInput, parentNode, xformsRoot, multipleRepositories, name, parentId, myId, queryType, targetid;
+        
+        /* Grabs node needed to gather information */
+        autocompleteInput = $(this);
+        parentNode = $(autocompleteInput.parent('span[data-name = "autocomplete"]').parent('span[data-name$= "-autocomplete"]'));
+        xformsRoot = parentNode.parent('.xfContainer');
+        if (xformsRoot.length === 0) {
+            xformsRoot = parentNode.parent('.xfRepeatItem');
+        }
+
+        multipleRepositories = parentNode.attr('data-multiple');
+        name = autocompleteInput.attr('name');
+        parentId = xformsRoot.attr('id');
+        myId = parentId + 'AC';
+
+        if (xformsRoot.length !== 0) {
+            if (autocompletes[myId] === undefined) {
+                var xformsValueNode, xformsValueClass;
                 
+                if (multipleRepositories !== undefined && multipleRepositories === 'true') {
+                    _initRepositories(parentNode, parentId);
+                }
+                
+                //Get xforms node which holds current value
+                xformsValueClass = '.' + autocompleteInput.attr('data-name') + ' .xfValue';
+                xformsValueNode = xformsRoot.find('.' + autocompleteInput.attr('data-name') + ' .xfValue');
+                
+                console.log("JQUERY-VALUE: ", xformsValueNode.val());
+                console.log("DOJO-VALUE: ", dojo.attr(dojo.byId(xformsValueNode.attr('id')), 'value'));
+                
+                //Set input to xforms value
+                autocompleteInput.val(xformsValueNode.val());
+                //Get xforms-input-id
+                targetid = xformsRoot.find('.' + autocompleteInput.attr('data-name')).attr('id');
+                //Get query type
                 queryType = autocompleteInput.attr('data-queryType');
 
                 if (!(autocompleteInput.hasClass('select2-container'))) {
                     autocompleteInput.attr('targetid', targetid);
-                    
+                    autocompleteInput.attr('id', myId);
+
                     autocompleteInput.select2({
                         name: queryType,
                         placeholder: "Search for a term",
                         minimumInputLength: 3,
-                        formatResult: termFormatResult,
+                        formatResult: namesFormatResult,
+                        /*
+                        function(term, container, query) {
+                            if(queryType === 'names') {
+                                namesFormatResult(term, container, query)
+                            } else {
+                                termFormatResult(term, container, query) 
+                            }
+                        },
+                        */
                         formatSelection: termFormatSelection,
                         formatNoMatches: "<div>No matches</div>",
                         dropdownCssClass: "bigdrop",
@@ -291,7 +317,7 @@ function initAutocompletes() {
                                     type: queryType,
                                     query: term,
                                     page_limit: 10,
-                                    collections: autocompleteGroup.prop('data-collections'),
+                                    collections: parentNode.prop('data-collections'),
                                     page: page
                                 };
                             },
@@ -314,7 +340,7 @@ function initAutocompletes() {
                         var target, object, uuid, refid, targetid;
                         target = $(e.target);
                         targetid = target.attr('targetid');
-                        
+
                         if ("" === e.val) {
                             fluxProcessor.dispatchEventType(targetid, 'autocomplete-callback', {
                                 termValue: "",
@@ -351,15 +377,25 @@ function initAutocompletes() {
                                 });
                             }
                         }
+                    }).on('select2-highlight', function (e) {
+                        $('#' + e.val + ' .tooltip').tooltip({
+                            content: function () {
+                                return $('#tooltip-' + e.val).html();
+                            }
+                        });
+                        $('#' + e.val + ' .link').on('mouseup', function (f) {
+                            f.stopPropagation();
+                            var url = $(f.target).attr('href');
+                            var win = window.open(url, '_blank');
+                            win.focus();
+                        });
                     });
                 }
                 
-                autocompletes[key] = autocompleteInput;
-                //console.log("initAutocompletes(): " , autocompletes);
-                //console.log("initAutocompletes(): " , autocompletes[key]);
+                autocompletes[myId] = autocompleteInput;
             } else {
                 //console.log("initAutocompletes(): ignore already initalized autocomplete element");
-            }
+            }                        
         } else {
             //console.log("initAutocompletes(): ignore parentless element");
         }
@@ -368,27 +404,25 @@ function initAutocompletes() {
 
 }
 
-function clearAndInitAutocompletes() {
+function destroyAutocompletes() {
     "use strict";
-    //console.log("clearAndInitAutocompletes()");
-    var key, autocompleteGroup;
-
+    var key;
+    //console.log("DESTROY");
     for (key in autocompletes) {
         if (autocompletes.hasOwnProperty(key)) {
-            autocompleteGroup = autocompletes[key];
-            if (autocompleteGroup.find('input[name = "global-select"]') !== undefined) {
-                autocompleteGroup.find('input[name = "global-select"]').select2('destroy');
-            }
-            if (autocompleteGroup.find('input[name = "custom-select"]') !== undefined) {
-                autocompleteGroup.find('input[name = "custom-select"]').select2('destroy');
-            }
-            if (autocompleteGroup.find('input[name$="-autocomplete-input"]') !== undefined) {
-                autocompleteGroup.find('input[name$="-autocomplete-input"]').select2('destroy');
+            if (autocompletes[key] !== undefined) {
+                console.log('#' + key);
+                $('#' + key).select2('destroy');
             }
         }
     }
 
     autocompletes = {};
+}
+
+function clearAndInitAutocompletes() {
+    "use strict";
+    destroyAutocompletes();
     initAutocompletes();
 }
 
@@ -398,7 +432,161 @@ function init(data) {
     model['groups'] = data.querySelector('groups').innerHTML;
 }
 
-$( document ).ready(function() {
+$(document).ready(function () {
     "use strict";
     Flux.getInstanceDocument('m-main', 'i-user', fluxProcessor.sessionKey, init);
 });
+
+
+
+function formatResult(term, container, query) {
+    console.log("TERM: ", term);
+    console.log("CONTAINER: ", container);
+    console.log("QUERY: ", query);
+}
+
+
+/* NEW */
+/* NEW */
+/* NEW */
+
+function namesFormatResult(term, container, query) {
+    "use strict";
+    var markup, type, regex, value, sources, i, j, rowspan;
+
+    var id = term.uuid;
+    if (id === undefined) {
+        id = term.id;
+    }
+
+    type = _termIcon(term.type);
+
+    if (term.mainHeadings !== undefined) {
+        if (Array.isArray(term.mainHeadings.term)) {
+            rowspan = term.mainHeadings.term.length;
+        } else {
+            rowspan = 2;
+        }
+    } else {
+        rowspan = 1;
+    }
+
+    console.log('namesFormatResult:  Query: ', query);
+    regex = new RegExp(escapeRegExp(query.term), 'gi');
+    value = term.value.replace(regex, function (match) { return '<b class="select2-match">' + match + '</b>'; });
+
+    markup = "<table id='" + id + "' class='term-result'>";
+    markup +=   "<tr>";
+    markup +=       "<td class='term-info'>";
+    markup +=           "<div class='term-term'>";
+    markup +=               "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
+    markup +=               "<span class='term-value'>" + value + "<span>";
+    if (term.bio !== undefined) {
+        markup +=           "&nbsp;<span class='term-bio'>" + term.bio + "</span>";
+    }
+    if (term.authority !== "") {
+        markup +=               "&nbsp;<span><img src='../cluster-shared/resources/images/viaf/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+    }
+    
+    if (term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) {
+        markup +=           "<i class='tooltip term-related fa fa-info-circle fa-lg' title='VIAF-ID: " + term.id + "'></i>";
+    } else if (term.authority === 'viaf' && term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
+        markup +=           "<i class='tooltip term-related fa fa-info-circle fa-lg' title=''></i>";
+    }
+    markup +=           "</div>";
+    markup +=       "</td>";
+    markup +=   "</tr>";
+    markup +=   "<tr>";
+    markup +=       "<td>";
+    if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) || term.authority === 'viaf') {
+        markup += "&nbsp;<span class='link'>";
+        markup += "<a target='_blank' href='http://www.viaf.org/" + term.id + "' title='Open in Viaf'>" + term.id + "</a>";
+        markup += "</span>";
+    }
+    markup +=       "</td>";
+    markup +=   "</tr>";
+    markup += "</table>";
+    if (term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
+        markup += "<div style='display:none' id='tooltip-" + id + "'>";
+        markup +=       "<div>";
+        markup +=       "<table>";
+        if (Array.isArray(term.mainHeadings.term)) {
+            for (i = 0; i < term.mainHeadings.term.length; i++) {
+                markup +=       "<tr>";
+                markup +=           "<td>" + term.mainHeadings.term[i].value + "</td>";
+                
+                markup +=       "</tr>";
+                if (term.mainHeadings.term[i].sources !== undefined && term.mainHeadings.term[i].sources !== '') {
+                    markup +=       "<tr>";
+                    markup +=           "<td>";
+                    
+                    sources = [];
+                    sources = term.mainHeadings.term[i].sources.split(/\b\s+/);
+                    for (j = 0; j < sources.length; j++) {
+                        if (sources[j] !== '') {
+                            markup +=   '<img src="../resources/images/viaf/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                        }
+                    }
+                    markup +=           "</td>";
+                    markup +=       "</tr>";
+                }
+            }
+        } else {
+            markup +=       "<tr>";
+            markup +=           "<td>" + term.mainHeadings.term.value + "</td>";
+            markup +=       "</tr>";
+            if (term.mainHeadings.term.sources !== undefined && term.mainHeadings.term.sources !== '') {
+                markup +=       "<tr>";
+                markup +=           "<td>";
+                sources = [];
+                sources = term.mainHeadings.term.sources.split(/\b\s+/);
+                for (j = 0; j < sources.length; j++) {
+                    if (sources[j] !== '') {
+                        markup +=   '<img src="../resources/images/viaf/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                    }
+                }
+                markup +=           "</td>";
+                markup +=       "</tr>";
+            }
+        }
+        markup +=       "</table>";
+        markup +=       "</div>";
+        markup += "</div>";
+    }
+    return markup;
+}
+
+
+function _termIcon(type) {
+    "use strict";
+    var icon = 'question';
+    if (type === 'personal') {
+        icon = 'user';
+    } else if (type === 'corporate') {
+        icon = 'globe';
+    } else if (type === 'subject') {
+        icon = 'bookmark';
+    } else if (type === 'materials' || type === 'techniques' || type === 'worktypes') {
+        icon = 'paint-brush';
+    } else if (type === 'styleperiods') {
+        icon = 'clock-o';
+    }
+    return icon;
+}
+
+function _repoIcon(repotype) {
+    "use strict";
+    var icon = 'question';
+    if (repotype === 'user') {
+        icon = 'user';
+    } else if (repotype === 'global') {
+        icon = 'university';
+    } else if (repotype === 'group') {
+        icon = 'group';
+    } else if (repotype === 'custom') {
+        icon = 'angle-double-right';
+    }
+    return icon;
+}
+
+

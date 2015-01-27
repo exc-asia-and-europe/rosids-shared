@@ -52,33 +52,13 @@
             <value>crp</value>
         </item>
         <item>
-            <label>collector</label>
-            <value>col</value>
-        </item>
-        <item>
-            <label>contributor</label>
-            <value>ctb</value>
-        </item>
-        <item>
             <label>creator</label>
             <value>cre</value>
-        </item>
-        <item>
-            <label>curator</label>
-            <value>cur</value>
         </item>
         <item>
             <label>director</label>
             <value>drt</value>
             <labelSecondary>directed by</labelSecondary>
-        </item>
-        <item>
-            <label>depicted</label>
-            <value>dpc</value>
-        </item>
-        <item>
-            <label>donor</label>
-            <value>dnr</value>
         </item>
         <item>
             <label>editor</label>
@@ -91,10 +71,6 @@
             <labelSecondary>illustrated by</labelSecondary>
         </item>
         <item>
-            <label>inscriber</label>
-            <value>ins</value>
-        </item>
-        <item>
             <label>interviewee</label>
             <value>ive</value>
         </item>
@@ -102,18 +78,6 @@
             <label>interviewer</label>
             <value>ivr</value>
             <labelSecondary>interviewed by</labelSecondary>
-        </item>
-        <item>
-            <label>manufacturer</label>
-            <value>mfr</value>
-        </item>
-        <item>
-            <label>musician</label>
-            <value>mus</value>
-        </item>
-        <item>
-            <label>owner</label>
-            <value>own</value>
         </item>
         <item>
             <label>photographer</label>
