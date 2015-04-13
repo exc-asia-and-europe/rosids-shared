@@ -137,7 +137,7 @@ function initAutocompletes() {
                     globalSelect = autocompleteGroup.find('input[name = "global-select"]');
 
                     $.ajax({
-                        url: config.host + '/exist/apps/cluster-shared/modules/repositories/repositories.xq',
+                        url: config.host + '/exist/apps/rosids-shared/modules/repositories/repositories.xq',
                         dataType: 'json',
                         crossDomain: true,
                         success: function (data) {
@@ -157,7 +157,7 @@ function initAutocompletes() {
                                     var customSelect = autocompleteGroup.find('input[name = "custom-select"]');
                                     if (e.added.id === '-1') {
                                         $.ajax({
-                                            url: config.host + "/exist/apps/cluster-shared/modules/repositories/repositories.xq?group=custom",
+                                            url: config.host + "/exist/apps/rosids-shared/modules/repositories/repositories.xq?group=custom",
                                             dataType: "json",
                                             crossDomain: true,
                                             success: function (data) {

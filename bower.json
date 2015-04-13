@@ -1,7 +1,7 @@
 {
-  "name": "cluster-shared",
+  "name": "rosids-shared",
   "version": "1.1.5.2",
-  "homepage": "https://github.com/zwobit/cluster-shared",
+  "homepage": "http://github.com/hra-team/apps/rosids-shared",
   "authors": [
     "Tobi Krebs <tobias.krebs@betterform.de>"
   ],

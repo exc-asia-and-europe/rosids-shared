@@ -121,7 +121,7 @@
     width: 16px;
     margin: 1px;  
     display: block;
-    background: url("/exist/apps/cluster-shared/resources/images/local.png") no-repeat center;
+    background: url("/exist/apps/rosids-shared/resources/images/local.png") no-repeat center;
 }
 
 .th_resources .img_aat,
@@ -136,7 +136,7 @@
     width: 16px;
     margin: 1px;  
     display: block;
-    background: url("/exist/apps/cluster-shared/resources/images/JPG.png") no-repeat center;
+    background: url("/exist/apps/rosids-shared/resources/images/JPG.png") no-repeat center;
 }
 
 .th_resources .img_viaf,
@@ -145,7 +145,7 @@
     width: 16px;
     margin: 1px;  
     display: block;
-    background: url("/exist/apps/cluster-shared/resources/images/viaf.png") no-repeat center;
+    background: url("/exist/apps/rosids-shared/resources/images/viaf.png") no-repeat center;
 }
 
 .th_resources .img_DNB,
@@ -154,7 +154,7 @@
     width: 16px;
     margin: 1px;  
     display: block;
-    background: url("/exist/apps/cluster-shared/resources/images/DNB.png") no-repeat center;
+    background: url("/exist/apps/rosids-shared/resources/images/DNB.png") no-repeat center;
 }
 
 .th_hint {
@@ -163,6 +163,6 @@
     width: 16px;
     margin: 1px;  
     display: inline-block;
-    background: url("/exist/apps/cluster-shared/resources/images/hint.png") no-repeat center;
+    background: url("/exist/apps/rosids-shared/resources/images/hint.png") no-repeat center;
 }
 

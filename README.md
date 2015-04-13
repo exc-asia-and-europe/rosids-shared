@@ -1,2 +1,2 @@
-cluster-shared
+rosids-shared
 ==============

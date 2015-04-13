@@ -1,6 +1,6 @@
 xquery version "3.0";
 
-module namespace app="http://www.betterform.de/projects/shared/config/app";
+module namespace app="http://github.com/hra-team/rosids-shared/config/app";
 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 (: Global settings :)
@@ -13,7 +13,7 @@ declare variable $app:db as xs:string := "/db/";
 declare %private variable $app:data-dir as xs:string := "/db/resources/";      
 
 
-declare  %private variable $app:shared-dir as xs:string := "/apps/cluster-shared";
+declare  %private variable $app:shared-dir as xs:string := "/apps/rosids-shared";
 declare  %private variable $app:ziziphus-dir as xs:string := "/apps/ziziphus";
 
 
@@ -54,6 +54,10 @@ declare variable $app:global-persons-repositories-configuration := <repository n
 (: organisations :)
 declare %private variable $app:global-organisations-repositories-collection := $app:default-repositories-collection || "organisations/";
 declare variable $app:global-organisations-repositories-configuration := <repository name="Organisations EXC" authority="local" source="EXC" icon="local"/>;
+
+(: locations :)
+declare %private variable $app:global-locations-repositories-collection := $app:default-repositories-collection || "locations/";
+declare variable $app:global-locations-repositories-configuration := <repository name="Subjects EXC" authority="local" source="EXC" icon="local"/>;
 
 (: subjects :)
 declare %private variable $app:global-subjects-repositories-collection := $app:default-repositories-collection || "subjects/";

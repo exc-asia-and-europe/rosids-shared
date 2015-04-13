@@ -35,6 +35,8 @@ function termIcon(type) {
         icon = 'paint-brush';
     } else if (type === 'styleperiods') {
         icon = 'clock-o';
+    } else if (type === 'locations') {
+        icon = 'location-arrow';
     }
     return icon;
 }
@@ -76,8 +78,8 @@ function initAutocompletes() {
                 xformsValueClass = '.' + autoComplete.attr('data-name') + ' .xfValue';
                 xformsValueNode = xfRoot.find('.' + autoComplete.attr('data-name') + ' .xfValue');
 
-                console.log("JQUERY-VALUE: ", xformsValueNode.val());
-                console.log("DOJO-VALUE: ", dojo.attr(dojo.byId(xformsValueNode.attr('id')), 'value'));
+                //console.log("JQUERY-VALUE: ", xformsValueNode.val());
+                //console.log("DOJO-VALUE: ", dojo.attr(dojo.byId(xformsValueNode.attr('id')), 'value'));
 
                 //Set input to xforms value
                 autoComplete.val(xformsValueNode.val());
@@ -94,6 +96,7 @@ function initAutocompletes() {
                         case 'names':
                             initNamesAutocomplete(autoComplete, parentNode);
                             break;
+                        case 'locations':
                         case 'subjects':
                         case 'materials':
                         case 'styleperiods':

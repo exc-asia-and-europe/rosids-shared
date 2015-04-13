@@ -75,7 +75,7 @@ function initMultipleRepositories(parentNode, parentId) {
     globalSelect = parentNode.find('input[name = "global-select"]');
 
     $.ajax({
-        url: config.host + '/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq',
+        url: config.host + '/exist/apps/rosids-shared/modules/ziziphus/repositories/repositories.xq',
         dataType: 'json',
         data: _model,
         crossDomain: true,
@@ -96,7 +96,7 @@ function initMultipleRepositories(parentNode, parentId) {
                     var customSelect = parentNode.find('input[name = "custom-select"]');
                     if (e.added.id === '-1') {
                         $.ajax({
-                            url: config.host + "/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
+                            url: config.host + "/exist/apps/rosids-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
                             dataType: "json",
                             crossDomain: true,
                             data: _model,

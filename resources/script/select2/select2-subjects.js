@@ -28,7 +28,7 @@ function _subjectsFormatResult(term, container, query) {
     }
     markup +=               "</span>"
     if (term.authority !== "") {
-        markup +=               "&nbsp;<span><img src='../cluster-shared/resources/images/viaf/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+        markup +=               "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
     }
     markup +=               "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
     markup +=           "</div>";

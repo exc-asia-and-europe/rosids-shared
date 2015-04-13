@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Gallery</title>
+        <link rel="stylesheet" type="text/css" href="../resources/script/vendor/image-picker/image-picker/image-picker.css"/>
+        <script type="application/javascript" src="../resources/script/vendor/jquery/jquery.min.js"></script>
+        <script type="application/javascript" src="../resources/script/vendor/image-picker/image-picker/image-picker.min.js"></script>
+    </head>
+    <body>
+        <select class="image-picker" multiple="multiple">
+            <option value=""></option>
+            <option data-img-src="http://kjc-sv016.kjc.uni-heidelberg.de:8600/images/service/download_uuid/i_e32a7d2f-0f43-596a-8bb9-5c4e6f358037?width=96&height=96" value="i_e32a7d2f-0f43-596a-8bb9-5c4e6f358037">i_e32a7d2f-0f43-596a-8bb9-5c4e6f358037</option>
+            <option data-img-src="http://kjc-sv016.kjc.uni-heidelberg.de:8600/images/service/download_uuid/i_ee550f73-7ba5-5664-9f6d-fa4bb11adc55?width=96&height=96" value="i_ee550f73-7ba5-5664-9f6d-fa4bb11adc55">i_ee550f73-7ba5-5664-9f6d-fa4bb11adc55</option>
+        </select>
+        <script>
+            $(".image-picker").imagepicker(
+                {
+                    hide_select: false,
+                    selected: function() {
+                        console.log(this.imagepicker);
+                    }
+                }
+            )
+        </script>
+    </body>
+</html>

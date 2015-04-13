@@ -2,8 +2,8 @@ xquery version "3.0";
 
 module namespace image-link-generator="http://hra.uni-heidelberg.de/ns/tamboti/modules/display/image-link-generator";
 
-import module namespace config="http://exist-db.org/mods/config" at "/db/apps/cluster-shared/modules/config.xqm";
-import module namespace security="http://exist-db.org/mods/security" at "/db/apps/cluster-shared/modules/search/security.xqm";
+import module namespace config="http://exist-db.org/mods/config" at "/db/apps/rosids-shared/modules/config.xqm";
+import module namespace security="http://exist-db.org/mods/security" at "/db/apps/rosids-shared/modules/search/security.xqm";
 
 declare namespace vra="http://www.vraweb.org/vracore4.htm";
 declare variable $image-link-generator:services := doc("../configuration/services.xml");

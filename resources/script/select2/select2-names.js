@@ -37,7 +37,7 @@ function _namesFormatResult(term, container, query) {
         markup +=           "&nbsp;<span class='term-bio'>" + term.bio + "</span>";
     }
     if (term.authority !== "") {
-        markup +=               "&nbsp;<span><img src='../cluster-shared/resources/images/viaf/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+        markup +=               "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
     }
     
     if (term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) {
@@ -76,7 +76,7 @@ function _namesFormatResult(term, container, query) {
                     sources = term.mainHeadings.term[i].sources.split(/\b\s+/);
                     for (j = 0; j < sources.length; j++) {
                         if (sources[j] !== '') {
-                            markup +=   '<img src="/exist/apps/cluster-shared/resources/images/viaf/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                            markup +=   '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
                         }
                     }
                     markup +=           "</td>";
@@ -94,7 +94,7 @@ function _namesFormatResult(term, container, query) {
                 sources = term.mainHeadings.term.sources.split(/\b\s+/);
                 for (j = 0; j < sources.length; j++) {
                     if (sources[j] !== '') {
-                        markup +=   '<img src="/exist/apps/cluster-shared/resources/images/viaf/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                        markup +=   '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
                     }
                 }
                 markup +=           "</td>";

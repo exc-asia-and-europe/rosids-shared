@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<meta xmlns="http://exist-db.org/xquery/repo" xmlns:repo="http://exist-db.org/xquery/repo">
-    <author>Adam Retter</author>
-    <author>Claudius Teodorescu</author>
-    <author>Dan McCreary</author>
-    <author>Dulip Withanage</author>
-    <author>Jens Østergaard Petersen</author>
-    <author>Wolfgang Meier</author>
-    <author>Tobi Krebs</author>
+<meta xmlns="http://exist-db.org/xquery/repo">
     <author>Matthias Arnold</author>
-    <website>http://exist-db.org</website>
+    <author>Matthias Guth</author>
+    <author>Tobi Krebs</author>
+    <author>Dan McCreary</author>
+    <author>Wolfgang Meier</author>
+    <author>Jens Østergaard Petersen</author>
+    <author>Adam Retter</author>    
+    <author>Claudius Teodorescu</author>
+    <author>Dulip Withanage</author>
+    <website>http://github.com/hra-team/rosids-shared</website>
     <license>GNU-LGPL</license>
     <copyright>true</copyright>
-    <description>Shared Resources for cluster applications</description>
+    <description>Shared Resources for rosids applications</description>
     <type>application</type>
-    <target>cluster-shared</target>
+    <target>rosids-shared</target>
     <status>stable</status>
     <permissions user="editor" group="biblio.users" mode="0755"/>
 </meta>

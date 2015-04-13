@@ -143,7 +143,7 @@ function _initRepositories(parentNode, parentId) {
     globalSelect = parentNode.find('input[name = "global-select"]');
 
     $.ajax({
-        url: config.host + '/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq',
+        url: config.host + '/exist/apps/rosids-shared/modules/ziziphus/repositories/repositories.xq',
         dataType: 'json',
         data: model,
         crossDomain: true,
@@ -164,7 +164,7 @@ function _initRepositories(parentNode, parentId) {
                     var customSelect = parentNode.find('input[name = "custom-select"]');
                     if (e.added.id === '-1') {
                         $.ajax({
-                            url: config.host + "/exist/apps/cluster-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
+                            url: config.host + "/exist/apps/rosids-shared/modules/ziziphus/repositories/repositories.xq?category=custom",
                             dataType: "json",
                             crossDomain: true,
                             data: model,
@@ -485,7 +485,7 @@ function namesFormatResult(term, container, query) {
         markup +=           "&nbsp;<span class='term-bio'>" + term.bio + "</span>";
     }
     if (term.authority !== "") {
-        markup +=               "&nbsp;<span><img src='../cluster-shared/resources/images/viaf/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+        markup +=               "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
     }
     
     if (term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) {
@@ -524,7 +524,7 @@ function namesFormatResult(term, container, query) {
                     sources = term.mainHeadings.term[i].sources.split(/\b\s+/);
                     for (j = 0; j < sources.length; j++) {
                         if (sources[j] !== '') {
-                            markup +=   '<img src="../resources/images/viaf/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                            markup +=   '<img src="../resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
                         }
                     }
                     markup +=           "</td>";
@@ -542,7 +542,7 @@ function namesFormatResult(term, container, query) {
                 sources = term.mainHeadings.term.sources.split(/\b\s+/);
                 for (j = 0; j < sources.length; j++) {
                     if (sources[j] !== '') {
-                        markup +=   '<img src="../resources/images/viaf/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                        markup +=   '<img src="../resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
                     }
                 }
                 markup +=           "</td>";
