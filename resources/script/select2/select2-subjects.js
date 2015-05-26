@@ -10,34 +10,38 @@ function _subjectsFormatResult(term, container, query) {
     if (id === undefined) {
         id = term.id;
     }
-    
+
     type = termIcon(term.type);
 
-    console.log('Query: ', query);
+    //console.log('Query: ', query);
     regex = new RegExp(escapeRegExp(query.term), 'gi');
-    value = term.value.replace(regex, function (match) { return '<b class="select2-match">' + match + '</b>'; });
+    value = term.value.replace(regex, function (match) {
+        return '<b class="select2-match">' + match + '</b>';
+    });
 
     markup = "<table id='" + id + "' class='term-result'>";
-    markup +=   "<tr>";
-    markup +=       "<td class='term-info'>";
-    markup +=           "<div class='term-term'>";
-    markup +=               "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
-    markup +=               "<span class='term-value'>"+value;
-    if(term.qualifiers !== undefined && term.qualifiers !== '') {
-        markup +=               " (" + term.qualifiers + ")"
+    markup += "<tr>";
+    markup += "<td class='term-info'>";
+    markup += "<div class='term-term'>";
+    markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
+    markup += "<span class='term-value'>" + value;
+    if (term.qualifiers !== undefined && term.qualifiers !== '') {
+        markup += " (" + term.qualifiers + ")"
     }
-    markup +=               "</span>"
+    markup += "</span>"
     if (term.authority !== "") {
-        markup +=               "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+        markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
     }
-    markup +=               "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
-    markup +=           "</div>";
-    markup +=       "</td>";
-    markup +=   "</tr>";
-    
+    if (Array.isArray(term.descriptiveNote) || term.relatedTerm !== undefined) {
+        markup += "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
+    }
+    markup += "</div>";
+    markup += "</td>";
+    markup += "</tr>";
+
     //LINK
-    markup +=   "<tr>";
-    markup +=       "<td>";
+    markup += "<tr>";
+    markup += "<td>";
     if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("getty") > -1)) || term.authority === 'aat') {
         markup += "&nbsp;<span class='link'>";
         markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.getty.edu/vow/AATFullDisplay?logic=AND&note=&english=N&prev_page=1&subjectid=" + term.id + "&find=" + term.id + "' title='Open in AAT'>AAT: " + term.id + "</a>";
@@ -47,10 +51,10 @@ function _subjectsFormatResult(term, container, query) {
         markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.getty.edu/vow/TGNFullDisplay?place=&nation=&english=Y&prev_page=1&subjectid=" + term.id + "&find=" + term.id + "' title='Open in TGN'>TGN: " + term.id + "</a>";
         markup += "</span>";
     }
-    markup +=       "</td>";
-    markup +=   "</tr>";
+    markup += "</td>";
+    markup += "</tr>";
     markup += "</table>";
-    
+
     //TOOLTIP
     markup += _tooltipMarkup(term, id, regex)
     return markup;
@@ -58,63 +62,67 @@ function _subjectsFormatResult(term, container, query) {
 
 function _tooltipMarkup(term, id, regex) {
     var relatedTerm, markup = '';
-    
+
     markup += "<div style='display:none' id='tooltip-" + id + "'>";
-    markup +=       "<div>";
-    markup +=           "<table>";
-    if(Array.isArray(term.descriptiveNote)) {
+    markup += "<div>";
+    markup += "<table>";
+    if (Array.isArray(term.descriptiveNote)) {
         for (i = 0; i < term.descriptiveNote.length; i++) {
-            markup +=       "<tr class='note'>";
-            markup +=           "<td>" + term.descriptiveNote[i].value;
-            if(term.descriptiveNote[i].languages !== undefined) {
+            markup += "<tr class='note'>";
+            markup += "<td>" + term.descriptiveNote[i].value;
+            if (term.descriptiveNote[i].languages !== undefined) {
                 markup += ' (' + term.descriptiveNote[i].languages + ')'
-            } 
-            markup +=           "</td>";
-            markup +=       "</tr>";
+            }
+            markup += "</td>";
+            markup += "</tr>";
         }
-        markup +=       "<tr>";
-        markup +=           "<td>&nbsp;</td>";
-        markup +=       "</tr>";
-    } else if (term.descriptiveNote !== undefined ){
-        markup +=       "<tr class='note'>";
-        markup +=           "<td>" + term.descriptiveNote.value;
+        markup += "<tr>";
+        markup += "<td>&nbsp;</td>";
+        markup += "</tr>";
+    } else if (term.descriptiveNote !== undefined) {
+        markup += "<tr class='note'>";
+        markup += "<td>" + term.descriptiveNote.value;
         /*
-        if(term.descriptiveNote. languages !== undefined) {
-            markup += ' (' + term.descriptiveNote. languages + ')'
-        } 
-        */
-        markup +=           "</td>";
-        markup +=       "</tr>";
-        markup +=       "<tr>";
-        markup +=           "<td>&nbsp;</td>";
-        markup +=       "</tr>";
+         if(term.descriptiveNote. languages !== undefined) {
+         markup += ' (' + term.descriptiveNote. languages + ')'
+         }
+         */
+        markup += "</td>";
+        markup += "</tr>";
+        markup += "<tr>";
+        markup += "<td>&nbsp;</td>";
+        markup += "</tr>";
     }
-    if(Array.isArray(term.relatedTerm)) {
+    if (Array.isArray(term.relatedTerm)) {
         for (i = 0; i < term.relatedTerm.length; i++) {
-            relatedTerm = term.relatedTerm[i].value.replace(regex, function (match) {return '<b>' + match + '</b>'; });
-            markup +=       "<tr class='relatedTerm'>";
-            markup +=           "<td>" + relatedTerm;
-            if(term.relatedTerm[i].qualifiers !== undefined && term.relatedTerm[i].qualifiers !== '') {
+            relatedTerm = term.relatedTerm[i].value.replace(regex, function (match) {
+                return '<b>' + match + '</b>';
+            });
+            markup += "<tr class='relatedTerm'>";
+            markup += "<td>" + relatedTerm;
+            if (term.relatedTerm[i].qualifiers !== undefined && term.relatedTerm[i].qualifiers !== '') {
                 markup += ' (' + term.relatedTerm[i].qualifiers + ')'
-            } 
-            markup +=           "</td>";
-            markup +=       "</tr>";
-           
-        }   
-    } else if (term.relatedTerm !== undefined ){
-        relatedTerm = term.relatedTerm.value.replace(regex, function (match) {return '<b>' + match + '</b>'; });
-        markup +=       "<tr class='relatedTerm'>";
-        markup +=           "<td>" + relatedTerm;
-        if(term.relatedTerm.qualifiers !== undefined && term.relatedTerm.qualifiers !== '') {
+            }
+            markup += "</td>";
+            markup += "</tr>";
+
+        }
+    } else if (term.relatedTerm !== undefined) {
+        relatedTerm = term.relatedTerm.value.replace(regex, function (match) {
+            return '<b>' + match + '</b>';
+        });
+        markup += "<tr class='relatedTerm'>";
+        markup += "<td>" + relatedTerm;
+        if (term.relatedTerm.qualifiers !== undefined && term.relatedTerm.qualifiers !== '') {
             markup += ' (' + term.relatedTerm.qualifiers + ')'
-        } 
-        markup +=           "</td>";
-        markup +=       "</tr>";
+        }
+        markup += "</td>";
+        markup += "</tr>";
     }
-    markup +=           "</table>";
-    markup +=       "</div>";
+    markup += "</table>";
     markup += "</div>";
-    
+    markup += "</div>";
+
     return markup;
 }
 function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
@@ -128,8 +136,9 @@ function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
         formatNoMatches: "<div>No matches</div>",
         dropdownCssClass: "bigdrop",
         allowClear: true,
-        createSearchChoice: function (term) { 
-            return { "id" : "-1", "type" : "unknown", "value" : "Add new entry.", "authority" : "", "sources" : "", "source" : "" }; },
+        createSearchChoice: function (term) {
+            return {"id": "-1", "type": "unknown", "value": "Add new entry.", "authority": "", "sources": "", "source": ""};
+        },
         id: function (object) {
             var uuid, id;
             uuid = object.uuid;
@@ -171,13 +180,13 @@ function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
                 if (Array.isArray(data.term)) {
                     return {results: data.term, more: more};
                 } else {
-                    return { results: [data.term], more: more};
+                    return {results: [data.term], more: more};
                 }
             }
         }
     }).on('change', function (e) {
         var target, object, uuid, refid, targetid;
-        
+
         target = $(e.target);
         targetid = target.attr('targetid');
 
@@ -224,17 +233,18 @@ function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
             }
         });
         /*
-        var link = $('#' + e.val + ' .link');
-        if (undefined == link.onmouseup) {
-            link.on('mouseup', function (f) {
-                f.stopPropagation();
-                var url = $(f.target).attr('href');
-                var win = window.open(url, '_blank');
-                win.focus();
-            });    
-        } else {
-            console.log("mouseup present");
-        }
-        */
+         var link = $('#' + e.val + ' .link');
+         if (undefined == link.onmouseup) {
+         link.on('mouseup', function (f) {
+         f.stopPropagation();
+         var url = $(f.target).attr('href');
+         var win = window.open(url, '_blank');
+         win.focus();
+         });
+         } else {
+         console.log("mouseup present");
+         }
+         */
     });
-};
+}
+;
