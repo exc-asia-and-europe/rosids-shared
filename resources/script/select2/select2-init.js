@@ -8,19 +8,21 @@ var config = {
 var autocompletes = {};
 function openLink(that) {
     "use strict";
-    
+
     var url = $(that).attr('href');
     var win = window.open(url, '_blank');
     win.focus();
-};
+}
+;
 
 function escapeRegExp(str) {
     "use strict";
-    if(str !== undefined) {
+    if (str !== undefined) {
         return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-    }    
+    }
     return ""
-};
+}
+;
 
 function termIcon(type) {
     "use strict";
@@ -35,7 +37,7 @@ function termIcon(type) {
         icon = 'paint-brush';
     } else if (type === 'styleperiods') {
         icon = 'clock-o';
-    } else if (type === 'locations') {
+    } else if (type === 'geographic') {
         icon = 'location-arrow';
     }
     return icon;
@@ -49,28 +51,28 @@ function termFormatSelection(term) {
 
 function initAutocompletes() {
     "use strict";
-    
+
     $(".xfRepeatItem [name$=-autocomplete-input]").each(function () {
         var autoComplete, parentNode, xfRoot, multiple, name, xfId, autoCompleteID, queryType, targetID;
-        
+
         autoComplete = $(this);
-        
+
         parentNode = $(autoComplete.parent('span[data-name = "autocomplete"]').parent('span[data-name$= "-autocomplete"]'));
         xfRoot = parentNode.parent('.xfContainer');
         if (xfRoot.length === 0) {
             xfRoot = parentNode.parent('.xfRepeatItem');
         }
         //NAMES: data-queryType="names"
-        
+
         multiple = parentNode.attr('data-multiple');
         name = autoComplete.attr('name');
         xfId = xfRoot.attr('id');
         autoCompleteID = xfId + 'AC';
-        
+
         if (xfRoot.length !== 0) {
             if (autocompletes[autoCompleteID] === undefined) {
                 var xformsValueNode, xformsValueClass;
-                
+
                 if (multiple !== undefined && multiple === 'true') {
                     initMultipleRepositories(parentNode, xfId);
                 }
@@ -91,12 +93,12 @@ function initAutocompletes() {
                 if (!(autoComplete.hasClass('select2-container'))) {
                     autoComplete.attr('targetid', targetID);
                     autoComplete.attr('id', autoCompleteID);
-                    
-                    switch(queryType) {
+
+                    switch (queryType) {
                         case 'names':
                             initNamesAutocomplete(autoComplete, parentNode);
                             break;
-                        case 'locations':
+                        case 'geographic':
                         case 'subjects':
                         case 'materials':
                         case 'styleperiods':
@@ -105,13 +107,14 @@ function initAutocompletes() {
                             initSubjectsAutocomplete(autoComplete, parentNode, queryType);
                             break;
                         default:
-                    }    
+                    }
                 }
                 autocompletes[autoCompleteID] = autoComplete;
             }
         }
     });
-};
+}
+;
 
 
 function destroyAutocompletes() {

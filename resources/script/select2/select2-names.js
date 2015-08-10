@@ -25,85 +25,107 @@ function _namesFormatResult(term, container, query) {
 
     //console.log('namesFormatResult:  Query: ', query);
     regex = new RegExp(escapeRegExp(query.term), 'gi');
-    value = term.value.replace(regex, function (match) { return '<b class="select2-match">' + match + '</b>'; });
-
-    markup = "<table id='" + id + "' class='term-result'>";
-    markup +=   "<tr>";
-    markup +=       "<td class='term-info'>";
-    markup +=           "<div class='term-term'>";
-    markup +=               "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
-    markup +=               "<span class='term-value'>" + value + "<span>";
-    if (term.bio !== undefined) {
-        markup +=           "&nbsp;<span class='term-bio'>" + term.bio + "</span>";
-    }
-    if (term.authority !== "") {
-        markup +=               "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
-    }
-    
-    if (term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) {
-        markup +=           "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title='VIAF-ID: " + term.id + "'></i>";
-    } else if (term.source === 'viaf' && term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
-        markup +=           "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
-    }
-    markup +=           "</div>";
-    markup +=       "</td>";
-    markup +=   "</tr>";
-    markup +=   "<tr>";
-    markup +=       "<td>";
-    if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) || term.authority === 'viaf') {
-        markup += "&nbsp;<span class='link'>";
-        markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.viaf.org/" + term.id + "' title='Open in Viaf'>" + term.id + "</a>";
+    value = term.value.replace(regex, function (match) {
+        return '<b class="select2-match">' + match + '</b>';
+    });
+    if (term.id === "-1") {
+        markup = "<table id='" + id + "' class='term-result'>";
+        markup += "<tr>";
+        markup += "<td class='term-info'>";
+        markup += "<div class='term-term'>";
+        markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
+        markup += "<span class='term-value'>"
+        markup += "<span class='link'>";
+        markup += "<a target='_blank' onmouseup='openLink(this);' href='https://docs.google.com/forms/d/1cMW6NS5bwgB3sB82hvUGnrp0nJR2Hr9dZuPmFvI6-y8/viewform' title='Add new Agent'>Add new agent</a>";
         markup += "</span>";
-    }
-    markup +=       "</td>";
-    markup +=   "</tr>";
-    markup += "</table>";
-    if (term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
-        markup += "<div style='display:none' id='tooltip-" + id + "'>";
-        markup +=       "<div>";
-        markup +=       "<table>";
-        if (Array.isArray(term.mainHeadings.term)) {
-            for (i = 0; i < term.mainHeadings.term.length; i++) {
-                markup +=       "<tr>";
-                markup +=           "<td>" + term.mainHeadings.term[i].value + "</td>";
-                
-                markup +=       "</tr>";
-                if (term.mainHeadings.term[i].sources !== undefined && term.mainHeadings.term[i].sources !== '') {
-                    markup +=       "<tr>";
-                    markup +=           "<td>";
-                    
+        markup += "</span>";
+        markup += "</div>";
+        markup += "</td>";
+        markup += "</tr>";
+        markup += "</table>";
+    } else {
+
+        markup = "<table id='" + id + "' class='term-result'>";
+        markup += "<tr>";
+        markup += "<td class='term-info'>";
+        markup += "<div class='term-term'>";
+        markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
+        markup += "<span class='term-value'>" + value + "<span>";
+        if (term.bio !== undefined) {
+            markup += "&nbsp;<span class='term-bio'>" + term.bio + "</span>";
+        }
+        if (term.authority !== "") {
+            markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+        }
+        if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1))) {
+            markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/viaf.png' title='viaf' alt='viaf'/></span>";
+        }
+
+        if (term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) {
+            markup += "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title='VIAF-ID: " + term.id + "'></i>";
+        } else if (term.source === 'viaf' && term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
+            markup += "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
+        }
+        markup += "</div>";
+        markup += "</td>";
+        markup += "</tr>";
+        markup += "<tr>";
+        markup += "<td>";
+        if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) || term.authority === 'viaf') {
+            markup += "&nbsp;<span class='link'>";
+            markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.viaf.org/" + term.id + "' title='Open in Viaf'>" + term.id + "</a>";
+            markup += "</span>";
+        }
+        markup += "</td>";
+        markup += "</tr>";
+        markup += "</table>";
+        if (term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
+            markup += "<div style='display:none' id='tooltip-" + id + "'>";
+            markup += "<div>";
+            markup += "<table>";
+            if (Array.isArray(term.mainHeadings.term)) {
+                for (i = 0; i < term.mainHeadings.term.length; i++) {
+                    markup += "<tr>";
+                    markup += "<td>" + term.mainHeadings.term[i].value + "</td>";
+
+                    markup += "</tr>";
+                    if (term.mainHeadings.term[i].sources !== undefined && term.mainHeadings.term[i].sources !== '') {
+                        markup += "<tr>";
+                        markup += "<td>";
+
+                        sources = [];
+                        sources = term.mainHeadings.term[i].sources.split(/\b\s+/);
+                        for (j = 0; j < sources.length; j++) {
+                            if (sources[j] !== '') {
+                                markup += '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                            }
+                        }
+                        markup += "</td>";
+                        markup += "</tr>";
+                    }
+                }
+            } else {
+                markup += "<tr>";
+                markup += "<td>" + term.mainHeadings.term.value + "</td>";
+                markup += "</tr>";
+                if (term.mainHeadings.term.sources !== undefined && term.mainHeadings.term.sources !== '') {
+                    markup += "<tr>";
+                    markup += "<td>";
                     sources = [];
-                    sources = term.mainHeadings.term[i].sources.split(/\b\s+/);
+                    sources = term.mainHeadings.term.sources.split(/\b\s+/);
                     for (j = 0; j < sources.length; j++) {
                         if (sources[j] !== '') {
-                            markup +=   '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                            markup += '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
                         }
                     }
-                    markup +=           "</td>";
-                    markup +=       "</tr>";
+                    markup += "</td>";
+                    markup += "</tr>";
                 }
             }
-        } else {
-            markup +=       "<tr>";
-            markup +=           "<td>" + term.mainHeadings.term.value + "</td>";
-            markup +=       "</tr>";
-            if (term.mainHeadings.term.sources !== undefined && term.mainHeadings.term.sources !== '') {
-                markup +=       "<tr>";
-                markup +=           "<td>";
-                sources = [];
-                sources = term.mainHeadings.term.sources.split(/\b\s+/);
-                for (j = 0; j < sources.length; j++) {
-                    if (sources[j] !== '') {
-                        markup +=   '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
-                    }
-                }
-                markup +=           "</td>";
-                markup +=       "</tr>";
-            }
+            markup += "</table>";
+            markup += "</div>";
+            markup += "</div>";
         }
-        markup +=       "</table>";
-        markup +=       "</div>";
-        markup += "</div>";
     }
     return markup;
 }
@@ -118,9 +140,9 @@ function initNamesAutocomplete(autoComplete, parentNode) {
         formatNoMatches: "<div>No matches</div>",
         dropdownCssClass: "bigdrop",
         allowClear: true,
-        
-        createSearchChoice: function (term) { 
-            return { "id" : "-1", "type" : "unknown", "value" : "Add new entry.", "authority" : "", "sources" : "", "source" : "" }; },
+        createSearchChoice: function (term) {
+            return {"id": "-1", "type": "unknown", "value": "Add new agent entry.", "authority": "", "sources": "", "source": ""};
+        },
         id: function (object) {
             var uuid, id;
             uuid = object.uuid;
@@ -163,13 +185,13 @@ function initNamesAutocomplete(autoComplete, parentNode) {
                 if (Array.isArray(data.term)) {
                     return {results: data.term, more: more};
                 } else {
-                    return { results: [data.term], more: more};
+                    return {results: [data.term], more: more};
                 }
             }
         }
     }).on('change', function (e) {
-        var target, object, uuid, refid, targetid;
-        
+        var target, object, myid, refid, targetid;
+
         target = $(e.target);
         targetid = target.attr('targetid');
 
@@ -184,18 +206,18 @@ function initNamesAutocomplete(autoComplete, parentNode) {
                 termType: ""
             });
         } else if ("-1" === e.val) {
-            alert("To be implemented ...");
+            //alert("To be implemented ...");
         } else {
             object = null;
             if (e.added !== undefined) {
                 object = e.added;
             }
             if (object !== null) {
-                uuid = object.uuid;
-                if (uuid !== undefined) {
-                    refid = object.uuid;
-                } else {
+                myid = object.id;
+                if (myid !== undefined) {
                     refid = object.id;
+                } else {
+                    refid = object.uuid;
                 }
 
                 fluxProcessor.dispatchEventType(targetid, 'autocomplete-callback', {
@@ -216,12 +238,12 @@ function initNamesAutocomplete(autoComplete, parentNode) {
             }
         });
         /*
-        $('#' + e.val + ' .link').on('mouseup', function (f) {
-            f.stopPropagation();
-            var url = $(f.target).attr('href');
-            var win = window.open(url, '_blank');
-            win.focus();
-        });
-        */
+         $('#' + e.val + ' .link').on('mouseup', function (f) {
+         f.stopPropagation();
+         var url = $(f.target).attr('href');
+         var win = window.open(url, '_blank');
+         win.focus();
+         });
+         */
     });
 }

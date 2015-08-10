@@ -33,11 +33,6 @@
                 persons or bodies.</use>
         </item>
         <item>
-            <label>depicted</label>
-            <value>dpc</value>
-            <use>Use for an entity depicted or portrayed in a work, particularly in a work of art.</use>
-        </item>
-        <item>
             <label>creator</label>
             <value>cre</value>
             <use>Use for a person or organization responsible for the intellectual or artistic content of a work.</use>
@@ -495,6 +490,11 @@
             <label>delineator</label>
             <value>dln</value>
             <use>Use for a person or organization executing technical drawings from others' designs.</use>
+        </item>
+        <item>
+            <label>depicted</label>
+            <value>dpc</value>
+            <use>Use for an entity depicted or portrayed in a work, particularly in a work of art.</use>
         </item>
         <item>
             <label>depositor</label>

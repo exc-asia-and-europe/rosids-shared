@@ -9,20 +9,20 @@ declare variable $userpass := security:get-user-credential-from-session()[2];
 declare option exist:serialize "method=json media-type=text/javascript";
 
 declare %private function local:getGlobalCollection($type as xs:string) {
-    let $name := 
+    let $name :=
         switch ($type)
             case "names"
             case "organisations"
             case "persons"
                 return 'EXC/VIAF'
-            case 'locations'
+            case 'geographic'
             case 'subjects'
             case 'materials'
             case 'styleperiods'
             case 'techniques'
             case 'worktypes'
                 return 'EXC/AAT'
-            default 
+            default
                 return 'Unknown'
     return
         <repository repotype="global" id="100" termtype="{$type}" name="{$name}" collection="default"/>
@@ -52,16 +52,16 @@ declare %private function local:getGroupCollections($group as xs:string, $type a
                 <repository id="{util:uuid()}" name="{$config/repository/@name}" collection="{$collection}" icon="{$config/repository/@icon}"></repository>
                 (: <repository repotype="group" id="{util:uuid()}" termtype="{$type}" name="{$config/repository/@name}" collection="{$collection}" icon="{$config/repository/@icon}"></repository> :)
         )
-        else () 
+        else ()
 };
 
 declare %private function local:getRepositories($user as xs:string, $groups as xs:string*, $type as xs:string, $category as xs:string) {
     let $global := local:getGlobalCollection($type)
     let $local := ( local:getUserCollection($user, $type), for $group in $groups
-        return 
+        return
             local:getGroupCollections($group, $type) )
     return
-   
+
         if($category eq 'global')
         then (
             $global,
