@@ -53,6 +53,9 @@ function _subjectsFormatResult(term, container, query) {
         if (term.authority !== "") {
             markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
         }
+        if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("aat") > -1))) {
+            markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/aat.png' title='aat' alt='aat'/></span>";
+        }
         if (Array.isArray(term.descriptiveNote) || term.relatedTerm !== undefined || term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
             markup += "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
         }

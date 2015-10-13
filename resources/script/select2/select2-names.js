@@ -190,7 +190,7 @@ function initNamesAutocomplete(autoComplete, parentNode) {
             }
         }
     }).on('change', function (e) {
-        var target, object, myid, refid, targetid;
+        var target, object, myid, refid, authority, targetid;
 
         target = $(e.target);
         targetid = target.attr('targetid');
@@ -220,12 +220,18 @@ function initNamesAutocomplete(autoComplete, parentNode) {
                     refid = object.uuid;
                 }
 
+                if (object.authority === 'local' && object.sources.contains('viaf')) {
+                    authority = 'viaf';
+                } else {
+                    authority = object.authority;
+                }
+
                 fluxProcessor.dispatchEventType(targetid, 'autocomplete-callback', {
                     termValue: object.value,
                     refid: refid,
                     earliestDate: object.earliestDate,
                     latestDate: object.latestDate,
-                    authority: object.authority,
+                    authority: authority,
                     source: object.source,
                     termType: object.type
                 });

@@ -163,6 +163,13 @@ declare function app:get-resource($uuid) {
             return
                 util:eval("security:get-resource('" || $uuid || "')")
         } catch * {
-            ()
+            try {
+            let $security-path := xs:anyURI('/apps/rosids-shared/modules/search/security.xqm')
+            let $import := util:import-module($security-ns, "security", $security-path)
+            return
+                util:eval("security:get-resource('" || $uuid || "')")
+            } catch * {
+                "Catched Error: " ||  $err:code || ": " || $err:description
+            }
         }
 };
