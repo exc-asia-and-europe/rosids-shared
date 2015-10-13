@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <code-table xml:id="language-3-type-sorted-short-code">
     <code-table-name>language-3-type-sorted-short-code</code-table-name>
     <tab-id>compact-a</tab-id>
@@ -101,12 +102,12 @@
             <label>Spanish</label>
         </item>
         <item>
-            <value>tgl</value>
-            <label>Tagalog</label>
-        </item>
-        <item>
             <value>tgk</value>
             <label>Tajik</label>
+        </item>
+        <item>
+            <value>tgl</value>
+            <label>Tagalog</label>
         </item>
         <item>
             <value>tha</value>

@@ -6,9 +6,9 @@ function _subjectsFormatResult(term, container, query) {
     var markup, type, regex, value, relatedTerms, sources, i;
 
 
-    var id = term.uuid;
+    var id = term.id;
     if (id === undefined) {
-        id = term.id;
+        id = term.uuid;
     }
 
     type = termIcon(term.type);
@@ -19,112 +19,194 @@ function _subjectsFormatResult(term, container, query) {
         return '<b class="select2-match">' + match + '</b>';
     });
 
-    markup = "<table id='" + id + "' class='term-result'>";
-    markup += "<tr>";
-    markup += "<td class='term-info'>";
-    markup += "<div class='term-term'>";
-    markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
-    markup += "<span class='term-value'>" + value;
-    if (term.qualifiers !== undefined && term.qualifiers !== '') {
-        markup += " (" + term.qualifiers + ")"
-    }
-    markup += "</span>"
-    if (term.authority !== "") {
-        markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
-    }
-    if (Array.isArray(term.descriptiveNote) || term.relatedTerm !== undefined) {
-        markup += "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
-    }
-    markup += "</div>";
-    markup += "</td>";
-    markup += "</tr>";
-
-    //LINK
-    markup += "<tr>";
-    markup += "<td>";
-    if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("getty") > -1)) || term.authority === 'aat') {
-        markup += "&nbsp;<span class='link'>";
-        markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.getty.edu/vow/AATFullDisplay?logic=AND&note=&english=N&prev_page=1&subjectid=" + term.id + "&find=" + term.id + "' title='Open in AAT'>AAT: " + term.id + "</a>";
+    if (term.id === "-1") {
+        markup = "<table id='" + id + "' class='term-result'>";
+        markup += "<tr>";
+        markup += "<td class='term-info'>";
+        markup += "<div class='term-term'>";
+        markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
+        markup += "<span class='term-value'>"
+        markup += "<span class='link'>";
+        if (term.source === 'geographic') {
+            markup += "<a target='_blank' onmouseup='openLink(this);' href='https://docs.google.com/forms/d/1X44GZ4Lk0WfO6Vp1M2UnOmiZF3V7tabLH39bj12YSKU/viewform' title='Add new Agent'>Add new location</a>";
+        }
+        else {
+            markup += "<a target='_blank' onmouseup='openLink(this);' href='https://docs.google.com/forms/d/111b2k3IQeVuJhk0NXsgdsokw-wexk5BjKmcJLF5jVeE/viewform' title='Add new Agent'>Add new subject</a>";
+        }
         markup += "</span>";
-    } else if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("getty") > -1)) || term.authority === 'tgn') {
-        markup += "&nbsp;<span class='link'>";
-        markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.getty.edu/vow/TGNFullDisplay?place=&nation=&english=Y&prev_page=1&subjectid=" + term.id + "&find=" + term.id + "' title='Open in TGN'>TGN: " + term.id + "</a>";
         markup += "</span>";
-    }
-    markup += "</td>";
-    markup += "</tr>";
-    markup += "</table>";
+        markup += "</div>";
+        markup += "</td>";
+        markup += "</tr>";
+        markup += "</table>";
+    } else {
+        markup = "<table id='" + id + "' class='term-result'>";
+        markup += "<tr>";
+        markup += "<td class='term-info'>";
+        markup += "<div class='term-term'>";
+        markup += "<span class='term-type'><i class='fa fa-" + type + "'></i></span>";
+        markup += "<span class='term-value'>" + value;
+        if (term.qualifiers !== undefined && term.qualifiers !== '') {
+            markup += " (" + term.qualifiers + ")"
+        }
+        markup += "</span>"
+        if (term.authority !== "") {
+            markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/" + term.authority + ".png' title='" + term.authority + "' alt='" + term.authority + "'/></span>";
+        }
+        if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("aat") > -1))) {
+            markup += "&nbsp;<span><img src='../rosids-shared/resources/images/repositories/aat.png' title='aat' alt='aat'/></span>";
+        }
+        if (Array.isArray(term.descriptiveNote) || term.relatedTerm !== undefined || term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
+            markup += "<i class='tooltip-popup term-related fa fa-info-circle fa-lg' title=''></i>";
+        }
+        markup += "</div>";
+        markup += "</td>";
+        markup += "</tr>";
 
-    //TOOLTIP
-    markup += _tooltipMarkup(term, id, regex)
+        //LINK
+        markup += "<tr>";
+        markup += "<td>";
+        if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("getty") > -1)) || term.authority === 'aat') {
+            markup += "&nbsp;<span class='link'>";
+            markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.getty.edu/vow/AATFullDisplay?logic=AND&note=&english=N&prev_page=1&subjectid=" + term.id + "&find=" + term.id + "' title='Open in AAT'>AAT: " + term.id + "</a>";
+            markup += "</span>";
+        } else if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("getty") > -1)) || term.authority === 'tgn') {
+            markup += "&nbsp;<span class='link'>";
+            markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.getty.edu/vow/TGNFullDisplay?place=&nation=&english=Y&prev_page=1&subjectid=" + term.id + "&find=" + term.id + "' title='Open in TGN'>TGN: " + term.id + "</a>";
+            if (term.hierarchy !== undefined && term.hierarchy.value !== '') {
+                markup += "<span class='hierarchy'>(" + term.hierarchy.value + ")</span>";
+            }
+            markup += "</span>";
+        } else if ((term.authority === 'local' && term.id !== "" && (term.sources !== undefined && term.sources.indexOf("viaf") > -1)) || term.authority === 'viaf') {
+            markup += "&nbsp;<span class='link'>";
+            markup += "<a target='_blank' onmouseup='openLink(this);' href='http://www.viaf.org/" + term.id + "' title='Open in Viaf'>" + term.id + "</a>";
+            markup += "</span>";
+        }
+        markup += "</td>";
+        markup += "</tr>";
+        markup += "</table>";
+
+        //TOOLTIP
+        markup += _tooltipMarkup(term, id, regex)
+    }
     return markup;
 }
 
 function _tooltipMarkup(term, id, regex) {
     var relatedTerm, markup = '';
+    if (term.authority === 'viaf') {
+        if (term.mainHeadings !== undefined && term.mainHeadings.term !== undefined) {
+            markup += "<div style='display:none' id='tooltip-" + id + "'>";
+            markup += "<div>";
+            markup += "<table>";
+            if (Array.isArray(term.mainHeadings.term)) {
+                for (i = 0; i < term.mainHeadings.term.length; i++) {
+                    markup += "<tr>";
+                    markup += "<td>" + term.mainHeadings.term[i].value + "</td>";
 
-    markup += "<div style='display:none' id='tooltip-" + id + "'>";
-    markup += "<div>";
-    markup += "<table>";
-    if (Array.isArray(term.descriptiveNote)) {
-        for (i = 0; i < term.descriptiveNote.length; i++) {
-            markup += "<tr class='note'>";
-            markup += "<td>" + term.descriptiveNote[i].value;
-            if (term.descriptiveNote[i].languages !== undefined) {
-                markup += ' (' + term.descriptiveNote[i].languages + ')'
+                    markup += "</tr>";
+                    if (term.mainHeadings.term[i].sources !== undefined && term.mainHeadings.term[i].sources !== '') {
+                        markup += "<tr>";
+                        markup += "<td>";
+
+                        sources = [];
+                        sources = term.mainHeadings.term[i].sources.split(/\b\s+/);
+                        for (j = 0; j < sources.length; j++) {
+                            if (sources[j] !== '') {
+                                markup += '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                            }
+                        }
+                        markup += "</td>";
+                        markup += "</tr>";
+                    }
+                }
+            } else {
+                markup += "<tr>";
+                markup += "<td>" + term.mainHeadings.term.value + "</td>";
+                markup += "</tr>";
+                if (term.mainHeadings.term.sources !== undefined && term.mainHeadings.term.sources !== '') {
+                    markup += "<tr>";
+                    markup += "<td>";
+                    sources = [];
+                    sources = term.mainHeadings.term.sources.split(/\b\s+/);
+                    for (j = 0; j < sources.length; j++) {
+                        if (sources[j] !== '') {
+                            markup += '<img src="/exist/apps/rosids-shared/resources/images/repositories/' + sources[j] + '.png" title="' + sources[j] + '" alt="' + sources[j] + '"/>';
+                        }
+                    }
+                    markup += "</td>";
+                    markup += "</tr>";
+                }
             }
+            markup += "</table>";
+            markup += "</div>";
+            markup += "</div>";
+        }
+    } else {
+        markup += "<div style='display:none' id='tooltip-" + id + "'>";
+        markup += "<div>";
+        markup += "<table>";
+        if (Array.isArray(term.descriptiveNote)) {
+            for (i = 0; i < term.descriptiveNote.length; i++) {
+                markup += "<tr class='note'>";
+                markup += "<td>" + term.descriptiveNote[i].value;
+                if (term.descriptiveNote[i].languages !== undefined) {
+                    markup += ' (' + term.descriptiveNote[i].languages + ')'
+                }
+                markup += "</td>";
+                markup += "</tr>";
+            }
+            markup += "<tr>";
+            markup += "<td>&nbsp;</td>";
+            markup += "</tr>";
+        } else if (term.descriptiveNote !== undefined) {
+            markup += "<tr class='note'>";
+            markup += "<td>" + term.descriptiveNote.value;
+            /*
+             if(term.descriptiveNote. languages !== undefined) {
+             markup += ' (' + term.descriptiveNote. languages + ')'
+             }
+             */
             markup += "</td>";
             markup += "</tr>";
+            markup += "<tr>";
+            markup += "<td>&nbsp;</td>";
+            markup += "</tr>";
         }
-        markup += "<tr>";
-        markup += "<td>&nbsp;</td>";
-        markup += "</tr>";
-    } else if (term.descriptiveNote !== undefined) {
-        markup += "<tr class='note'>";
-        markup += "<td>" + term.descriptiveNote.value;
-        /*
-         if(term.descriptiveNote. languages !== undefined) {
-         markup += ' (' + term.descriptiveNote. languages + ')'
-         }
-         */
-        markup += "</td>";
-        markup += "</tr>";
-        markup += "<tr>";
-        markup += "<td>&nbsp;</td>";
-        markup += "</tr>";
-    }
-    if (Array.isArray(term.relatedTerm)) {
-        for (i = 0; i < term.relatedTerm.length; i++) {
-            relatedTerm = term.relatedTerm[i].value.replace(regex, function (match) {
+        if (Array.isArray(term.relatedTerm)) {
+            for (i = 0; i < term.relatedTerm.length; i++) {
+                relatedTerm = term.relatedTerm[i].value.replace(regex, function (match) {
+                    return '<b>' + match + '</b>';
+                });
+                markup += "<tr class='relatedTerm'>";
+                markup += "<td>" + relatedTerm;
+                if (term.relatedTerm[i].qualifiers !== undefined && term.relatedTerm[i].qualifiers !== '') {
+                    markup += ' (' + term.relatedTerm[i].qualifiers + ')'
+                }
+                markup += "</td>";
+                markup += "</tr>";
+
+            }
+        } else if (term.relatedTerm !== undefined) {
+            relatedTerm = term.relatedTerm.value.replace(regex, function (match) {
                 return '<b>' + match + '</b>';
             });
             markup += "<tr class='relatedTerm'>";
             markup += "<td>" + relatedTerm;
-            if (term.relatedTerm[i].qualifiers !== undefined && term.relatedTerm[i].qualifiers !== '') {
-                markup += ' (' + term.relatedTerm[i].qualifiers + ')'
+            if (term.relatedTerm.qualifiers !== undefined && term.relatedTerm.qualifiers !== '') {
+                markup += ' (' + term.relatedTerm.qualifiers + ')'
             }
             markup += "</td>";
             markup += "</tr>";
-
         }
-    } else if (term.relatedTerm !== undefined) {
-        relatedTerm = term.relatedTerm.value.replace(regex, function (match) {
-            return '<b>' + match + '</b>';
-        });
-        markup += "<tr class='relatedTerm'>";
-        markup += "<td>" + relatedTerm;
-        if (term.relatedTerm.qualifiers !== undefined && term.relatedTerm.qualifiers !== '') {
-            markup += ' (' + term.relatedTerm.qualifiers + ')'
-        }
-        markup += "</td>";
-        markup += "</tr>";
+        markup += "</table>";
+        markup += "</div>";
+        markup += "</div>";
     }
-    markup += "</table>";
-    markup += "</div>";
-    markup += "</div>";
 
     return markup;
 }
+
 function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
     autoComplete.select2({
         handler: undefined,
@@ -137,15 +219,15 @@ function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
         dropdownCssClass: "bigdrop",
         allowClear: true,
         createSearchChoice: function (term) {
-            return {"id": "-1", "type": "unknown", "value": "Add new entry.", "authority": "", "sources": "", "source": ""};
+            return {"id": "-1", "type": "unknown", "value": "Add new entry.", "authority": "", "sources": "", "source": queryType};
         },
         id: function (object) {
-            var uuid, id;
-            uuid = object.uuid;
-            if (uuid !== undefined) {
-                id = object.uuid;
-            } else {
+            var myid, id;
+            myid = object.id;
+            if (myid !== undefined) {
                 id = object.id;
+            } else {
+                id = object.uuid;
             }
             return id;
         },
@@ -185,7 +267,7 @@ function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
             }
         }
     }).on('change', function (e) {
-        var target, object, uuid, refid, targetid;
+        var target, object, myid, refid, targetid;
 
         target = $(e.target);
         targetid = target.attr('targetid');
@@ -201,18 +283,18 @@ function initSubjectsAutocomplete(autoComplete, parentNode, queryType) {
                 termType: ""
             });
         } else if ("-1" === e.val) {
-            alert("To be implemented ...");
+            //alert("To be implemented ...");
         } else {
             object = null;
             if (e.added !== undefined) {
                 object = e.added;
             }
             if (object !== null) {
-                uuid = object.uuid;
-                if (uuid !== undefined) {
-                    refid = object.uuid;
-                } else {
+                myid = object.id;
+                if (myid !== undefined) {
                     refid = object.id;
+                } else {
+                    refid = object.uuid;
                 }
 
                 fluxProcessor.dispatchEventType(targetid, 'autocomplete-callback', {

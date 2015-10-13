@@ -9,8 +9,8 @@ module namespace app="http://github.com/hra-team/rosids-shared/config/app";
 (: Enable debugging in xqueries :)
 declare variable $app:debug as xs:boolean := true();
 
-declare variable $app:db as xs:string := "/db/"; 
-declare %private variable $app:data-dir as xs:string := "/db/resources/";      
+declare variable $app:db as xs:string := "/db/";
+declare %private variable $app:data-dir as xs:string := "/db/data/";
 
 
 declare  %private variable $app:shared-dir as xs:string := "/apps/rosids-shared";
@@ -30,7 +30,7 @@ declare %private variable $app:users-data-dir as xs:string := $app:data-dir || "
 declare  %private variable $app:service-dir as xs:string := "/apps/rosids-services";
 
 (: data collection :)
-declare %private variable $app:repositories-collection := "/resources/services/repositories/";
+declare %private variable $app:repositories-collection := "/data/services/repositories/";
 
 (: Remote setting :)
 declare variable $app:service-host := "localhost";
@@ -55,7 +55,7 @@ declare variable $app:global-persons-repositories-configuration := <repository n
 declare %private variable $app:global-organisations-repositories-collection := $app:default-repositories-collection || "organisations/";
 declare variable $app:global-organisations-repositories-configuration := <repository name="Organisations EXC" authority="local" source="EXC" icon="local"/>;
 
-(: locations :)
+(: geographic :)
 declare %private variable $app:global-locations-repositories-collection := $app:default-repositories-collection || "locations/";
 declare variable $app:global-locations-repositories-configuration := <repository name="Subjects EXC" authority="local" source="EXC" icon="local"/>;
 
@@ -127,7 +127,7 @@ declare variable $app:groups-repositories-collection := $app:repositories-collec
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
 declare %private variable $app:ziziphus-collection-name as xs:string := "Priya Paul Collection";
 declare variable $app:ziziphus-resources-dir as xs:string := $app:ziziphus-dir || "/resources/";
-declare variable $app:ziziphus-default-record-dir as xs:string := $app:common-data-dir || $app:ziziphus-collection-name || "/";  
+declare variable $app:ziziphus-default-record-dir as xs:string := $app:common-data-dir || $app:ziziphus-collection-name || "/";
 
 
 (: ------------------------------------------------------------------------------------------------------------------------------------------ :)
@@ -145,11 +145,31 @@ declare variable $app:dba-credentials := app:get-dba-credentials();
 declare %private function app:get-dba-credentials() {
     let $config-ns := xs:anyURI("http://exist-db.org/mods/config")
     let $config-path := xs:anyURI('/apps/tamboti/modules/config.xqm ')
-    return 
+    return
         try {
             let $import := util:import-module($config-ns, "config", $config-path)
             return $config:dba-credentials
         } catch * {
             ("admin","")
+        }
+};
+
+declare function app:get-resource($uuid) {
+    let $security-ns := xs:anyURI("http://exist-db.org/mods/security")
+    let $security-path := xs:anyURI('/apps/tamboti/modules/search/security.xqm')
+    return
+        try {
+            let $import := util:import-module($security-ns, "security", $security-path)
+            return
+                util:eval("security:get-resource('" || $uuid || "')")
+        } catch * {
+            try {
+            let $security-path := xs:anyURI('/apps/rosids-shared/modules/search/security.xqm')
+            let $import := util:import-module($security-ns, "security", $security-path)
+            return
+                util:eval("security:get-resource('" || $uuid || "')")
+            } catch * {
+                "Catched Error: " ||  $err:code || ": " || $err:description
+            }
         }
 };

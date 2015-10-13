@@ -34,16 +34,25 @@ declare variable $config:users-login-blacklist := ("admin", "guest", "SYSTEM");
 (:~ Various permissions :)
 declare variable $config:resource-mode := "rw-------";
 declare variable $config:collection-mode := "rwx------";
-declare variable $config:temp-collection-mode := "rwxrws---";
+declare variable $config:temp-collection-mode := "rwxrwxrwx";
 declare variable $config:temp-resource-mode := "rwx------";
-declare variable $config:index-collection-mode := "rwxr-xr-x";
+declare variable $config:public-collection-mode := "rwxr-xr-x";
+declare variable $config:public-resource-mode := "rw-r--r--";
 
-declare variable $config:data-collection-name := "resources";
+(: Sharing permission definition :)
+declare variable $config:sharing-permissions := map {
+        "readonly" := map {"rank" := 1, "name" := "Read only",  "collection" := "r-x", "resource" := "r--"},
+(:        "write" := map {"rank" := 2, "name" := "Write", "collection" := "r-x", "resource" := "rw-"},:)
+        "full" := map {"rank" := 3, "name" := "Full Access", "collection" := "rwx", "resource" := "rwx"}
+};
+
+declare variable $config:data-collection-name := "data";
 declare variable $config:content-root := "/" || $config:data-collection-name;
 declare variable $config:mods-root := "/" || $config:data-collection-name;
 declare variable $config:mods-commons := fn:concat($config:mods-root, "/commons");
 declare variable $config:users-collection := xs:anyURI(fn:concat($config:mods-root, "/users"));
 declare variable $config:mods-root-minus-temp := ($config:mods-commons, $config:users-collection);
+declare variable $config:samples-collection-path := xs:anyURI($config:mods-commons || "/Samples");
 
 declare variable $config:url-image-size := "256";
 
@@ -59,13 +68,13 @@ declare variable $config:mods-temp-collection := $config:mods-root || "/temp";
 declare variable $config:mads-collection := "/db/" || $config:mods-root || "/mads";
 
 declare variable $config:themes := concat($config:app-root, "/themes");
-declare variable $config:theme-config := concat($config:themes, "/configuration.xml");
 
-declare variable $config:resources := concat($config:app-root, "/resources");
+declare variable $config:resources := concat($config:app-root, $config:mods-root);
 declare variable $config:images := concat($config:app-root, $config:mods-root ||  "/images");
 
 declare variable $config:images-subcollection := ("VRA_images");
 
+declare variable $config:app-http-root := "/exist" || substring-after($config:app-root, "/db");
 
 (: If the user has not specified a query, should he see the entire collection contents?
  : Set to true() if a query must be specified, false() to list the entire collection.
@@ -107,3 +116,11 @@ declare function config:rewrite-username($username as xs:string) as xs:string {
 };
 
 declare variable $config:max-inactive-interval-in-minutes := 480;
+
+declare variable $config:error-message-before-link := "An error occurred when displaying this record. In order to have this error fixed, please send us an email identifying the record by clicking on the following link: ";
+declare variable $config:error-message-after-link := " Clicking on the link will open your default email client.";
+declare variable $config:error-message-href := " mailto:hra@asia-europe.uni-heidelberg.de?Subject=Tamboti%20Display%20Problem&amp;body=Fix%20display%20of%20record%20";
+declare variable $config:error-message-link-text := "Send email.";
+
+(: paginator component :)
+declare variable $config:number-of-items-per-page := 20;

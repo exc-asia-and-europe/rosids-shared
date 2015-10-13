@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://expath.org/ns/pkg" name="http://github.com/hra-team/apps/rosids-shared" abbrev="rshared" version="1.1.2_patched.2" spec="1.0">
+<package xmlns="http://expath.org/ns/pkg" name="http://github.com/hra-team/apps/rosids-shared" abbrev="rshared" version="1.1.6" spec="1.0">
     <title>rosids shared</title>
 </package>

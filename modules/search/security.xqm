@@ -4,6 +4,9 @@ module namespace security = "http://exist-db.org/mods/security";
 
 declare namespace mods="http://www.loc.gov/mods/v3";
 declare namespace vra = "http://www.vraweb.org/vracore4.htm";
+declare namespace svg="http://www.w3.org/2000/svg";
+declare namespace tei="http://www.tei-c.org/ns/1.0";
+
 
 import module namespace config = "http://exist-db.org/mods/config" at "../config.xqm";
 
@@ -35,7 +38,7 @@ declare function security:login($username as xs:string, $password as xs:string?)
                         then
                             (
                                 (: update the last login time:)
-                                security:update-login-time($username),    
+                                security:update-login-time($username),
                                 true()
                             )
                         else
@@ -66,12 +69,12 @@ declare function security:store-user-credential-in-session($username as xs:strin
 
 (:~
 : Retrieves a user's credentials for the tamboti app from the http session
-: 
+:
 : @return The sequence (username as xs:string, password as xs:string)
 : If there is no entry in the session, then the guest account credentials are returned
 :)
 declare function security:get-user-credential-from-session() as xs:string+ {
-    let $user := session:get-attribute($security:SESSION_USER_ATTRIBUTE) 
+    let $user := session:get-attribute($security:SESSION_USER_ATTRIBUTE)
         return
             if ($user) then
             (
@@ -96,7 +99,7 @@ declare function security:get-human-name-for-user($username as xs:string) as xs:
 {
     let $first := (system:as-user($config:dba-credentials[1],$config:dba-credentials[2], sm:get-account-metadata($username, xs:anyURI("http://axschema.org/namePerson/first"))))
         return
-            if ($first) 
+            if ($first)
             then
                 concat($first, " ", (system:as-user($config:dba-credentials[1],$config:dba-credentials[2], sm:get-account-metadata($username, xs:anyURI("http://axschema.org/namePerson/last")))))
             else
@@ -109,10 +112,10 @@ declare function security:get-human-name-for-user($username as xs:string) as xs:
 : @param user The username
 :)
 declare function security:home-collection-exists($user as xs:string) as xs:boolean {
-    let $username := 
+    let $username :=
         if ($config:force-lower-case-usernames) then
             fn:lower-case($user)
-        else 
+        else
             $user
     return xmldb:collection-available(security:get-home-collection-uri($username))
 (:            xmldb:collection-available(xs:anyURI(security:get-home-collection-uri($username))):)
@@ -122,10 +125,10 @@ declare function security:home-collection-exists($user as xs:string) as xs:boole
 : Get the URI of a users tamboti home collection
 :)
 declare function security:get-home-collection-uri($user as xs:string) as xs:string {
-    let $username := 
-        if ($config:force-lower-case-usernames) then 
+    let $username :=
+        if ($config:force-lower-case-usernames) then
             fn:lower-case($user)
-        else 
+        else
             $user
     return
         xmldb:encode-uri($config:users-collection || "/" || $username)
@@ -137,9 +140,9 @@ declare function security:get-home-collection-uri($user as xs:string) as xs:stri
 : @return The uri of the users home collection or an empty sequence if it could not be created
 :)
 declare function security:create-home-collection($user as xs:string) as xs:string? {
-    let $username := if ($config:force-lower-case-usernames) then 
+    let $username := if ($config:force-lower-case-usernames) then
            fn:lower-case($user)
-        else 
+        else
             $user
     return
         if (xmldb:collection-available($config:users-collection)) then
@@ -155,14 +158,14 @@ declare function security:create-home-collection($user as xs:string) as xs:strin
                             (: set the group as biblio users group, so that other users can enumerate our sub-collections :)
                             let $null := sm:chgrp($collection-uri, $config:biblio-users-group)
                             let $null := sm:chown($collection-uri, security:get-user-credential-from-session()[1])
-                            let $null := security:create-user-metadata($collection-uri, $username) 
+                            let $null := security:create-user-metadata($collection-uri, $username)
                             return
                                 $collection-uri
-                         else 
+                         else
                             $collection-uri
             )
-        else 
-            ()        
+        else
+            ()
 };
 
 (:~
@@ -193,7 +196,7 @@ declare function security:create-user-metadata($user-collection-uri as xs:string
 :)
 declare function security:update-login-time($user as xs:string) as empty() {
     let $user-home-collection := security:get-home-collection-uri($user),
-    $security-metadata := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file)) 
+    $security-metadata := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file))
     return
         (
             update value $security-metadata/security:metadata/security:last-login-time with string($security-metadata/security:metadata/security:login-time),
@@ -205,7 +208,7 @@ declare function security:update-login-time($user as xs:string) as empty() {
 : Get the last login time of a user
 :)
 declare function security:get-last-login-time($user as xs:string) as xs:dateTime {
-    let $user-home-collection := security:get-home-collection-uri($user) 
+    let $user-home-collection := security:get-home-collection-uri($user)
         return
             let $last-login := fn:doc(fn:concat($user-home-collection, "/", $security:user-metadata-file))/security:metadata/security:last-login-time return
             if (exists($last-login)) then
@@ -265,7 +268,7 @@ declare function security:can-execute-collection($collection as xs:string) as xs
 declare function security:is-collection-owner($user as xs:string, $collection as xs:string) as xs:boolean
 {
     system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
-        let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) 
+        let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user)
             return
                 if (xmldb:collection-available($collection)) then
                   let $owner := security:get-owner($collection)
@@ -293,7 +296,7 @@ declare function security:set-resource-permissions($resource-path as xs:anyURI, 
     (
         sm:chown($resource-path, $user-name),
         sm:chgrp($resource-path, $group-name),
-        sm:chmod($resource-path, $permissions)        
+        sm:chmod($resource-path, $permissions)
     )
 };
 
@@ -307,9 +310,9 @@ declare function security:set-ace-writeable($resource as xs:anyURI, $id as xs:in
             if (empty($ace)) then
                 false()
             else (
-                
+
                 let $regexp-replacement := if ($is-writeable) then
-                    "w"    
+                    "w"
                 else
                     "-"
                 ,
@@ -317,13 +320,13 @@ declare function security:set-ace-writeable($resource as xs:anyURI, $id as xs:in
                 $null := system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2], sm:modify-ace($resource, $id, $ace/@access_type eq 'ALLOWED', $new-mode))
                 return
                     true()
-                
+
             )
 };
 
 (:~
 : toggles the ace-writable flag by name
-: 
+:
 : @param resource The resource or collection
 : @param target USER or GROUP
 : @param name The user- or groupname
@@ -331,7 +334,7 @@ declare function security:set-ace-writeable($resource as xs:anyURI, $id as xs:in
 :)
 
 declare function security:set-ace-writeable-by-name($resource as xs:anyURI, $target as xs:string, $name as xs:string, $is-writeable as xs:boolean) as xs:boolean {
-    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],    
+    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
         let $permissions := sm:get-permissions($resource)
         let $ace := $permissions/sm:permission/sm:acl/sm:ace[@target=$target and @who=$name][1]
         let $id := $ace/@index
@@ -339,9 +342,9 @@ declare function security:set-ace-writeable-by-name($resource as xs:anyURI, $tar
                 if (empty($ace)) then
                     false()
                 else (
-                    
+
                     let $regexp-replacement := if ($is-writeable) then
-                        "w"    
+                        "w"
                     else
                         "-"
                     ,
@@ -349,14 +352,14 @@ declare function security:set-ace-writeable-by-name($resource as xs:anyURI, $tar
                     $null := system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2], sm:modify-ace($resource, $id, $ace/@access_type eq 'ALLOWED', $new-mode))
                     return
                         true()
-                    
+
                 )
     )
 };
 
 (:~
 : toggles the ace-executable flag by name
-: 
+:
 : @param resource The resource or collection
 : @param target USER or GROUP
 : @param name The user- or groupname
@@ -364,7 +367,7 @@ declare function security:set-ace-writeable-by-name($resource as xs:anyURI, $tar
 :)
 
 declare function security:set-ace-executable-by-name($resource as xs:anyURI, $target as xs:string, $name as xs:string, $is-executable as xs:boolean) as xs:boolean {
-    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],    
+    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
         let $permissions := sm:get-permissions($resource)
         let $ace := $permissions/sm:permission/sm:acl/sm:ace[@target=$target and @who=$name][1]
         let $id := $ace/@index
@@ -372,9 +375,9 @@ declare function security:set-ace-executable-by-name($resource as xs:anyURI, $ta
                 if (empty($ace)) then
                     false()
                 else (
-                    
+
                     let $regexp-replacement := if ($is-executable) then
-                        "x"    
+                        "x"
                     else
                         "-"
                     ,
@@ -383,14 +386,14 @@ declare function security:set-ace-executable-by-name($resource as xs:anyURI, $ta
                     $null := system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2], sm:modify-ace($resource, $id, $ace/@access_type eq 'ALLOWED', $new-mode))
                     return
                         true()
-                    
+
                 )
     )
 };
 
 (:~
 : set the mode for an user or group ACE
-: 
+:
 : @param resource The resource or collection
 : @param target USER or GROUP
 : @param name The user- or groupname
@@ -398,7 +401,7 @@ declare function security:set-ace-executable-by-name($resource as xs:anyURI, $ta
 :)
 
 declare function security:set-ace-mode-by-name($resource as xs:anyURI, $target as xs:string, $name as xs:string, $ace-mode as xs:string) as xs:boolean {
-    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],    
+    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
         let $permissions := sm:get-permissions($resource)
         let $ace := $permissions/sm:permission/sm:acl/sm:ace[@target=$target and @who=$name][1]
         let $id := $ace/@index
@@ -422,7 +425,7 @@ declare function security:remove-ace($resource as xs:anyURI, $id as xs:int) as x
     system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
         let $permissions := sm:get-permissions($resource)
         let $ace := $permissions/sm:permission/sm:acl/sm:ace[xs:int(@index) eq $id]
-        
+
         return
             if (exists($ace))
             then
@@ -436,7 +439,7 @@ declare function security:remove-ace($resource as xs:anyURI, $id as xs:int) as x
 
 (:~
 : removes the user-ace by user name
-: 
+:
 : @param user The username
 : @param collection The path of the collection
 :)
@@ -449,10 +452,10 @@ declare function security:remove-user-ace($resource as xs:anyURI, $user as xs:st
             if (exists($ace)) then
                 (
                     let $null := sm:remove-ace($resource, $id)
-                    return 
+                    return
                         ($ace/@target, $ace/@who)
                 )
-    
+
             else
                 (())
     )
@@ -460,7 +463,7 @@ declare function security:remove-user-ace($resource as xs:anyURI, $user as xs:st
 
 (:~
 : removes the user-ace by target (USER/GROUP) and name
-: 
+:
 : @param resource The resource or collection
 : @param target USER or GROUP
 : @param name The user- or groupname
@@ -474,15 +477,24 @@ declare function security:remove-ace-by-name($resource as xs:anyURI, $target as 
             if (exists($ace)) then
                 (
                     let $null := sm:remove-ace($resource, $id)
-                    return 
+                    return
                         ($ace/@target, $ace/@who)
                 )
-    
+
             else
                 (())
         )
     )
 };
+
+declare function security:clear-aces-by-name($resource as xs:anyURI, $name as xs:string, $target-type as xs:string) {
+    let $ace-idxs :=  sm:get-permissions($resource)//sm:ace[@target = $target-type and @who = $name]/@index/number()
+    (: remove existing aces :)
+    for $idx in reverse($ace-idxs)
+        return
+            sm:remove-ace($resource, $idx)
+};
+
 
 (: adds a group ace and returns its index:)
 declare function security:add-group-ace($resource as xs:anyURI, $groupname as xs:string, $mode as xs:string) as xs:int? {
@@ -495,7 +507,7 @@ declare function security:add-group-ace($resource as xs:anyURI, $groupname as xs
 };
 
 declare function security:insert-group-ace($resource as xs:anyURI, $id as xs:int, $groupname as xs:string, $mode as xs:string) as xs:boolean {
-    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2], 
+    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
         (: if the ace index is one past the end of the acl, then we actually want an append :)
         if ($id eq xs:int(sm:get-permissions($resource)/sm:permission/sm:acl/@entries)) then
             fn:not(fn:empty(security:add-group-ace($resource, $groupname, $mode)))
@@ -537,7 +549,7 @@ declare function security:apply-parent-collection-permissions($resource as xs:an
     let $parent-permissions := sm:get-permissions(xs:anyURI(fn:replace($resource, "(.*)/.*", "$1")))
     let $this-permissions := sm:get-permissions($resource)
     let $this-last-acl-index := xs:int($this-permissions/sm:permission/sm:acl/@entries) -1
-    
+
     return
         (
             for $ace in $parent-permissions/sm:permission/sm:acl/sm:ace
@@ -557,7 +569,7 @@ declare function security:apply-parent-collection-permissions($resource as xs:an
             ,
             if ($this-permissions/sm:permission/@group ne $parent-permissions/sm:permission/@group)
             then
-                let $group-mode := fn:replace($parent-permissions/sm:permission/@mode, "...(...)...", "$1") 
+                let $group-mode := fn:replace($parent-permissions/sm:permission/@mode, "...(...)...", "$1")
                 return sm:add-group-ace($resource, $parent-permissions/sm:permission/@group, true(), $group-mode)
             else ()
             ,
@@ -580,38 +592,11 @@ declare function security:get-group($path as xs:string) as xs:string {
     data(sm:get-permissions(xs:anyURI($path))/sm:permission/@group)
 };
 
-declare function security:duplicate-acl($source-path as xs:string, $target-path as xs:string) as empty() {
-    system:as-user($config:dba-credentials[1], $config:dba-credentials[2],
-        for $ace in sm:get-permissions(xs:anyURI($source-path))//sm:ace
-            let $target := $ace/@target
-            let $who := $ace/@who
-            let $access_type := if ($ace/@access_type = 'ALLOWED') then true() else false()
-            let $mode := $ace/@mode
-            return
-                if ($target = 'USER')
-                then (sm:add-user-ace(xs:anyURI($target-path), $who, $access_type, $mode))
-                else (sm:add-group-ace(xs:anyURI($target-path), $who, $access_type, $mode))
-    )
-};
-
-declare function security:copy-collection-acl-to-child-resources($collection as xs:anyURI) {
-    system:as-user($config:dba-credentials[1], $config:dba-credentials[2],
-        for $resource-name in xmldb:get-child-resources($collection)
-            return
-                (
-                    (: first remove ACL on resource :)
-                    sm:clear-acl(xs:anyURI($collection || "/" || $resource-name)),
-                    (: add each ACE from collection to resource:)
-                    security:duplicate-acl($collection, $collection || "/" || $resource-name)
-                )
-    )
-};
-
 declare function security:copy-collection-rights-to-child-resources($collection as xs:anyURI) {
     system:as-user($config:dba-credentials[1], $config:dba-credentials[2],
         let $collection-owner := xmldb:get-owner($collection)
         let $collection-group := xmldb:get-group($collection)
-        
+
         for $resource-name in xmldb:get-child-resources($collection)
             return
                 security:copy-owner-and-group($collection, xs:anyURI($collection || "/" || $resource-name))
@@ -627,7 +612,7 @@ declare function security:copy-collection-permissions-to-child-resources($collec
 declare function security:copy-tamboti-collection-user-acl($collection as xs:anyURI) {
     (: update ACL for resources in parent collection  :)
     security:copy-collection-acl-to-child-resources(xs:anyURI($collection)),
-    
+
     if (xmldb:collection-available($collection || "/" || $config:images-subcollection)) then
         (
             (: update ACL for VRA_images collection  :)
@@ -645,7 +630,7 @@ declare function security:recursively-inherit-collection-acl($collection as xs:a
         (
             (: copy collection ACL and rights to each resource:)
             let $inherit-permissions := security:copy-collection-acl-to-child-resources($collection)
-        
+
             for $subcollection in xmldb:get-child-collections($collection)
                 let $subcollection-path := xs:anyURI($collection || "/" || $subcollection)
                     return
@@ -675,9 +660,9 @@ declare function security:recursively-set-owner-and-group($collection as xs:anyU
                     (
                         sm:chown($collection, $owner),
                         sm:chgrp($collection, $group),
-    
+
                         for $subcol in xmldb:get-child-collections($collection)
-                            return 
+                            return
                                 (
                                     security:recursively-set-owner-and-group(xs:anyURI($collection || "/" || $subcol), $owner, $group)
                                 )
@@ -687,10 +672,10 @@ declare function security:recursively-set-owner-and-group($collection as xs:anyU
                 util:log("INFO", "Catched Error: " ||  $err:code || ": " || $err:description),
                 false()
             }
-            
+
         )
     )
-        
+
 };
 
 declare function security:copy-owner-and-group($source as xs:anyURI, $target as xs:anyURI) {
@@ -703,34 +688,6 @@ declare function security:copy-owner-and-group($source as xs:anyURI, $target as 
                 sm:chgrp($target, $source-group)
             )
         )
-};
-
-declare function security:copy-collection-acl-to-child-resources($collection as xs:anyURI) {
-    for $resource-name in xmldb:get-child-resources($collection)
-        return
-            (
-                (: first remove ACL on resource :)
-                sm:clear-acl(xs:anyURI($collection || "/" || $resource-name)),
-                (: add each ACE from collection to resource:)
-                security:duplicate-acl($collection, $collection || "/" || $resource-name)
-            )
-};
-
-declare function security:copy-tamboti-collection-user-acl($collection as xs:anyURI) {
-    (: update ACL for resources in parent collection  :)
-    security:copy-collection-acl-to-child-resources(xs:anyURI($collection)),
-    
-    if (xmldb:collection-available($collection || "/" || $config:images-subcollection)) then
-        (
-            (: update ACL for VRA_images collection  :)
-            sm:clear-acl(xs:anyURI($collection || "/" || $config:images-subcollection)),
-            security:duplicate-acl($collection, $collection || "/" || $config:images-subcollection),
-            (: update ACL for resources in VRA_images   :)
-            security:copy-collection-acl-to-child-resources(xs:anyURI($collection || "/" || $config:images-subcollection))
-        )
-    else
-        ()
-
 };
 
 (:NB: below, commented out group-related functions, not used yet:)
@@ -746,9 +703,9 @@ declare function security:copy-tamboti-collection-user-acl($collection as xs:any
 declare function security:group-can-read-collection($group as xs:string, $collection as xs:string) as xs:boolean
 {
     if (xmldb:collection-available($collection)) then
-    
+
         let $permissions := sm:get-permissions($collection) return
-        
+
             (: check the group owner :)
             if ($permissions/@group eq $group and (fn:matches($permissions/@mode, "...r.....", "") or fn:matches($permissions/@mode, "......r.."))) then
                 true()
@@ -771,9 +728,9 @@ declare function security:group-can-read-collection($group as xs:string, $collec
 declare function security:group-can-write-collection($group as xs:string, $collection as xs:string) as xs:boolean
 {
     if (xmldb:collection-available($collection)) then
-    
+
         let $permissions := sm:get-permissions($collection) return
-        
+
             (: check the group owner :)
             if ($permissions/@group eq $group and (fn:matches($permissions/@mode, "....w....", "") or fn:matches($permissions/@mode, ".......w."))) then
                 true()
@@ -850,7 +807,7 @@ declare function security:set-other-can-read-collection($collection, $read as xs
         )
         return
             security:set-resource-permissions(xs:anyURI($collection), security:get-owner($collection), security:get-group($collection), $new-permissions),
-            
+
             true()
 };
 
@@ -862,9 +819,9 @@ declare function security:set-other-can-write-collection($collection, $write as 
         ) else (
            fn:replace($permissions, "(.......)(.)(.)", "$1-$3")
         )
-        return        
+        return
             security:set-resource-permissions(xs:anyURI($collection), security:get-owner($collection), security:get-group($collection), $new-permissions),
-            
+
             true()
 };
 
@@ -912,13 +869,13 @@ declare function security:set-group-can-write-collection($collection, $group as 
 :)
 (:
 declare function security:create-group($group-name as xs:string, $group-members as xs:string*) as xs:boolean
-{       
+{
     (: create the group, currently logged in user will be the groups manager :)
     if (sm:create-group($group-name, security:get-user-credential-from-session()[1], "")) then
     (
         (: add members to group :)
         let $add-results :=
-            for $group-member in $group-members            
+            for $group-member in $group-members
             let $group-member-username := if ($config:force-lower-case-usernames) then (fn:lower-case($group-member)) else ($group-member) return
                 sm:add-group-member($group-name, $group-member-username)
         return
@@ -956,7 +913,7 @@ declare function security:set-group-can-read-resource($group-name as xs:string, 
         )
         return
             security:set-resource-permissions(xs:anyURI(concat($collection-uri, "/", $resource-uri)), security:get-owner(concat($collection-uri, "/", $resource-uri)), $group-name, $new-permissions),
-            
+
             true()
 };
 :)
@@ -968,7 +925,7 @@ declare function security:get-groups($user as xs:string) as xs:string*
     XPTY0004: The actual cardinality for parameter 1 does not match the cardinality declared in the function's signature: xmldb:get-user-groups($user-id as xs:string) xs:string+. Expected cardinality: exactly one, got 2.
     :)
     let $null := util:log("debug", fn:concat("USER=========", $user)) return
-    
+
     let $username := if ($config:force-lower-case-usernames) then (fn:lower-case($user)) else ($user) return
         xmldb:get-user-groups($username)
 };
@@ -999,23 +956,6 @@ declare function security:copy-collection-acl-to-child-resources($collection as 
             )
 };
 
-declare function security:copy-tamboti-collection-user-acl($collection as xs:anyURI) {
-    (: update ACL for resources in parent collection  :)
-    security:copy-collection-acl-to-child-resources(xs:anyURI($collection)),
-    
-    if (xmldb:collection-available($collection || "/" || $config:images-subcollection)) then
-        (
-            (: update ACL for VRA_images collection  :)
-            sm:clear-acl(xs:anyURI($collection || "/" || $config:images-subcollection)),
-            security:duplicate-acl($collection, $collection || "/" || $config:images-subcollection),
-            (: update ACL for resources in VRA_images   :)
-            security:copy-collection-acl-to-child-resources(xs:anyURI($collection ||  "/" || $config:images-subcollection))
-        )
-    else
-        ()
-
-};
-
 (:~
 : get searchable children. Recursively goes into collection structure to get collections that are searchable by user but maybe not directly accessible because located in a non-searchable collection
 :
@@ -1025,7 +965,7 @@ declare function security:copy-tamboti-collection-user-acl($collection as xs:any
 :)
 declare function security:get-searchable-child-collections($collection-uri as xs:anyURI, $spare-user-home as xs:boolean) {
     (: elevate rights for going into the collection structure :)
-    let $subcollections := 
+    let $subcollections :=
         system:as-user($config:dba-credentials[1], $config:dba-credentials[2], (
                 xmldb:get-child-collections($collection-uri)
             )
@@ -1033,16 +973,16 @@ declare function security:get-searchable-child-collections($collection-uri as xs
     for $subcol in $subcollections[not($config:images-subcollection = .)]
     let $fullpath := xs:anyURI($collection-uri || "/" || $subcol)
     order by $subcol
-    
+
     return
         if ($spare-user-home and $subcol = security:get-user-credential-from-session()[1]) then
             ()
         else
             (
-                system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2], 
+                system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2],
                     if (xmldb:collection-available($fullpath)) then
                         let $readable := security:can-read-collection($fullpath)
-                        let $executeable := security:can-execute-collection($fullpath) 
+                        let $executeable := security:can-execute-collection($fullpath)
                         let $readable-children := security:get-searchable-child-collections($fullpath, $spare-user-home)
                         return
                             (
@@ -1060,8 +1000,8 @@ declare function security:get-searchable-child-collections($collection-uri as xs
 };
 
 declare function security:get-acl($collection-uri as xs:anyURI) {
-    let $aces := 
-        system:as-user($config:dba-credentials[1], $config:dba-credentials[2], 
+    let $aces :=
+        system:as-user($config:dba-credentials[1], $config:dba-credentials[2],
             sm:get-permissions($collection-uri)//sm:ace
         )
     return $aces
@@ -1076,14 +1016,14 @@ declare function security:get-acl($collection-uri as xs:anyURI) {
 declare function security:get-resource($id as xs:string) as node()? {
     (: Do search as dba :)
     let $resource :=
-        system:as-user($config:dba-credentials[1], $config:dba-credentials[2], 
-            collection($config:mods-root)//(mods:mods[@ID eq $id][1] | vra:vra/vra:work[@id eq $id][1] | vra:vra/vra:image[@id eq $id][1])
+        system:as-user($config:dba-credentials[1], $config:dba-credentials[2],
+            collection($config:mods-root)//(mods:mods[@ID eq $id][1] | vra:vra/vra:work[@id eq $id][1] | vra:vra/vra:image[@id eq $id][1] | svg:svg[@xml:id = $id][1] | tei:TEI[@xml:id = $id][1])
         )
     return
         if ($resource) then
             let $resource-path := util:collection-name($resource)
             let $resource-name := util:document-name($resource)
-            
+
             (: only return data if user has access to resource   :)
             return
                 system:as-user(security:get-user-credential-from-session()[1],security:get-user-credential-from-session()[2],
@@ -1096,3 +1036,120 @@ declare function security:get-resource($id as xs:string) as node()? {
         ()
 };
 
+declare function security:duplicate-acl($source as xs:anyURI, $target as xs:anyURI) {
+    (: get ACL from source   :)
+    let $ACL := sm:get-permissions($source)//sm:ace
+    return
+        (: first remove ACL on resource :)
+        sm:clear-acl($target),
+        (: add each ACE from collection to resource:)
+        for $ACE in sm:get-permissions($source)//sm:ace
+            let $ace-target := $ACE/@target
+            let $who := $ACE/@who
+            let $access_type := if ($ACE/@access_type = 'ALLOWED') then true() else false()
+            let $mode := $ACE/@mode
+            (: no  :)
+            return
+                if ($ace-target = 'USER') then
+                    sm:add-user-ace($target, $who, $access_type, $mode)
+                else
+                    sm:add-group-ace($target, $who, $access_type, $mode)
+
+};
+
+(:~
+: Copy collection ACL to resource and change mode to corresponding resource-mode
+:
+: @param $source-collection the target collection
+: @param $resource the resource-name to move
+: @param $target-collection the target collection
+:)
+
+declare function security:copy-collection-ace-to-resource-apply-modechange($collection as xs:anyURI, $resource as xs:anyURI) {
+    let $target-collection-aces := sm:get-permissions($collection)
+    (: clear respource ACL :)
+    let $clear := sm:clear-acl($resource)
+
+    for $ace in $target-collection-aces//sm:ace
+        let $resource-mode :=
+            for $key in map:keys($config:sharing-permissions)
+            return
+                if($config:sharing-permissions($key)("collection") = $ace/@mode/string()) then
+                    $config:sharing-permissions($key)("resource")
+                else
+                    ()
+        let $target := $ace/@target/string()
+        let $who := $ace/@who/string()
+        let $access-type := $ace/@access_type/string() = "ALLOWED"
+        return
+            if ($target = "USER") then
+                sm:add-user-ace($resource, $who, $access-type, $resource-mode)
+            else
+                sm:add-group-ace($resource, $who, $access-type, $resource-mode)
+};
+
+
+(:~
+: Move resource to a collection and apply permissions specified for Tamboti
+:
+: @param $source-collection the target collection
+: @param $resource the resource-name to move
+: @param $target-collection the target collection
+:)
+declare function security:move-resource-to-tamboti-collection($source-collection as xs:anyURI, $resource as xs:anyURI, $target-collection as xs:anyURI) {
+    system:as-user(security:get-user-credential-from-session()[1], security:get-user-credential-from-session()[2], (
+        (: first move the resource :)
+        try {
+            xmldb:move($source-collection, $target-collection, $resource),
+            (: if user is owner of target collection first change owner since he will get no ACE and will shut out himself  :)
+            if(xmldb:get-owner($target-collection) = security:get-user-credential-from-session()[1]) then
+                (
+                    security:copy-owner-and-group(xs:anyURI($target-collection), xs:anyURI($target-collection || "/" || $resource))
+                    ,
+                    security:copy-collection-ace-to-resource-apply-modechange($target-collection, xs:anyURI($target-collection || "/" || $resource))
+                )
+            else
+                (
+                    security:copy-collection-ace-to-resource-apply-modechange($target-collection, xs:anyURI($target-collection || "/" || $resource))
+                    ,
+                    security:copy-owner-and-group(xs:anyURI($target-collection), xs:anyURI($target-collection || "/" || $resource))
+                )
+        } catch * {
+            util:log("INFO", $err:code || ": " || $err:description)
+        }
+    ))
+};
+
+declare function security:copy-collection-acl($source-collection as xs:anyURI, $target-collection as xs:anyURI) {
+    try {
+        (
+            sm:clear-acl($target-collection)
+            ,
+            security:duplicate-acl($source-collection, $target-collection)
+            ,
+            for $resource in xmldb:get-child-resources($target-collection)
+            return
+                security:copy-collection-ace-to-resource-apply-modechange($target-collection, xs:anyURI($target-collection ||  "/" || $resource))
+            ,
+            let $call-for-VRA-images :=
+                if(xmldb:collection-available(xs:anyURI($target-collection || "/VRA_images"))) then
+                    (
+                    sm:clear-acl(xs:anyURI($target-collection || "/VRA_images"))
+                    ,
+                    security:duplicate-acl($source-collection, xs:anyURI($target-collection || "/VRA_images"))
+                    ,
+                    for $resource in xmldb:get-child-resources(xs:anyURI($target-collection || "/VRA_images"))
+                    return
+                        security:copy-collection-ace-to-resource-apply-modechange($target-collection, xs:anyURI($target-collection || "/VRA_images/" || $resource))
+                    )
+
+(:                    security:copy-collection-acl($target-collection, xs:anyURI($target-collection || "/VRA_images")):)
+                else
+                    ()
+            return true()
+        )
+    } catch * {
+          "Catched Error: " ||  $err:code || ": " || $err:description
+  }
+
+};
